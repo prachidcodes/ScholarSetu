@@ -1,0 +1,6 @@
+{
+  "name": "ScholarSetu",
+  "description": "Unified scholarship platform for Scheduled Tribe (ST) students under the Ministry of Tribal Affairs, India.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
