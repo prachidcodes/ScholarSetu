@@ -16,11 +16,13 @@ import {
   Legend 
 } from 'recharts';
 import { adminService } from '../../services/adminService';
+import { useLanguage } from '../../context/LanguageContext';
 import { Card, CardHeader, CardBody } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 
 export const CoverageIntelligencePage: React.FC = () => {
   const regions = adminService.getCoverageIntelligence();
+  const { t } = useLanguage();
   const [searchTerm, setSearchTerm] = useState('');
   const [campSuccess, setCampSuccess] = useState<string | null>(null);
 
@@ -47,10 +49,10 @@ export const CoverageIntelligencePage: React.FC = () => {
       <div>
         <div className="flex items-center gap-2 text-xs uppercase font-bold tracking-wider text-teal-800 mb-1">
           <Globe2 className="w-4 h-4" />
-          <span>Ministry of Tribal Affairs Geospatial Insights</span>
+          <span>{t('admin.districtCoverage', 'Ministry of Tribal Affairs Geospatial Insights')}</span>
         </div>
         <h1 className="font-display text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-          Tribal Scholarship Coverage & Saturation Intelligence
+          {t('admin.districtCoverage', 'Tribal Scholarship Coverage & Saturation Intelligence')}
         </h1>
         <p className="text-xs sm:text-sm text-slate-600 mt-1 max-w-2xl leading-relaxed">
           Pinpointing gaps where eligible Scheduled Tribe students have not yet transitioned to central scholarships. Identifies low-saturation blocks and mobilizes grassroots welfare camps.

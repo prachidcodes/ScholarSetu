@@ -28,7 +28,7 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({ onMenuToggle, isMobileMenuOpen }) => {
   const { user, role, logout, switchDemoRole } = useAuth();
   const { unreadNotificationCount, notifications, markNotificationAsRead } = useApp();
-  const { language, setLanguage, setIsTribalLanguageNoticeOpen } = useLanguage();
+  const { language, setLanguage, t, setIsTribalLanguageNoticeOpen } = useLanguage();
   const [showNotifDropdown, setShowNotifDropdown] = useState(false);
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
   const [showLangDropdown, setShowLangDropdown] = useState(false);
@@ -73,11 +73,11 @@ export const Header: React.FC<HeaderProps> = ({ onMenuToggle, isMobileMenuOpen }
                     Scholar<span className="text-teal-700">Setu</span>
                   </span>
                   <span className="hidden sm:inline-block px-2 py-0.5 text-[10px] uppercase font-bold tracking-widest bg-amber-50 text-amber-900 border border-amber-300/60 rounded">
-                    ST Portal
+                    {t('nav.studentPortal', 'ST Portal')}
                   </span>
                 </div>
                 <p className="text-[10px] sm:text-xs text-slate-500 font-medium leading-none">
-                  Ministry of Tribal Affairs • Govt. of India
+                  {t('common.motaTitle', 'Ministry of Tribal Affairs • Govt. of India')}
                 </p>
               </div>
             </Link>
@@ -89,10 +89,10 @@ export const Header: React.FC<HeaderProps> = ({ onMenuToggle, isMobileMenuOpen }
             <Link
               to="/"
               className="p-2 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors hidden sm:flex items-center gap-1 text-xs font-semibold"
-              title="Public Homepage"
+              title={t('nav.home', 'Home')}
             >
               <Home className="w-4 h-4 text-teal-800" />
-              <span className="hidden lg:inline">Home</span>
+              <span className="hidden lg:inline">{t('nav.home', 'Home')}</span>
             </Link>
 
             {/* Language Selector Dropdown */}
@@ -103,21 +103,31 @@ export const Header: React.FC<HeaderProps> = ({ onMenuToggle, isMobileMenuOpen }
                   setShowNotifDropdown(false);
                   setShowProfileDropdown(false);
                 }}
-                className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg border border-slate-300 transition-colors"
+                className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg border border-slate-300 transition-colors"
                 aria-label="Select Language"
               >
                 <Globe2 className="w-3.5 h-3.5 text-teal-700" />
-                <span className="hidden sm:inline">
-                  {SUPPORTED_LANGUAGES.find((l) => l.code === language)?.nativeName || 'EN'}
+                <span className="font-medium">
+                  {SUPPORTED_LANGUAGES.find((l) => l.code === language)?.nativeName || 'English'}
                 </span>
+                <ChevronDown className="w-3 h-3 text-slate-400" />
               </button>
 
               {showLangDropdown && (
-                <div className="absolute right-0 mt-2 w-52 bg-white rounded-xl shadow-xl border border-slate-200 py-2 z-50 animate-in fade-in">
-                  <div className="px-3 py-1 border-b border-slate-100 text-[10px] uppercase font-bold text-slate-400">
-                    Regional Languages
+                <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-slate-200 py-2 z-50 animate-in fade-in">
+                  <div className="px-3 py-1 border-b border-slate-100 flex items-center justify-between text-[10px] uppercase font-bold text-slate-400">
+                    <span>{t('nav.language', 'Language')}</span>
+                    <button
+                      onClick={() => {
+                        setShowLangDropdown(false);
+                        setIsTribalLanguageNoticeOpen(true);
+                      }}
+                      className="text-teal-700 hover:underline capitalize font-semibold"
+                    >
+                      {t('nav.tribalNotice', 'Tribal Languages')}
+                    </button>
                   </div>
-                  <div className="max-h-52 overflow-y-auto py-1">
+                  <div className="max-h-60 overflow-y-auto py-1">
                     {SUPPORTED_LANGUAGES.map((l) => (
                       <button
                         key={l.code}
@@ -125,12 +135,15 @@ export const Header: React.FC<HeaderProps> = ({ onMenuToggle, isMobileMenuOpen }
                           setLanguage(l.code);
                           setShowLangDropdown(false);
                         }}
-                        className={`w-full text-left px-3 py-1.5 text-xs flex items-center justify-between hover:bg-slate-50 ${
+                        className={`w-full text-left px-3 py-2 text-xs flex items-center justify-between hover:bg-slate-50 transition-colors ${
                           language === l.code ? 'font-bold text-teal-800 bg-teal-50' : 'text-slate-700'
                         }`}
                       >
-                        <span>{l.nativeName} ({l.name})</span>
-                        {language === l.code && <Check className="w-3.5 h-3.5 text-teal-700" />}
+                        <span className="flex items-center gap-2">
+                          <span className="text-sm">{l.nativeName}</span>
+                          <span className="text-slate-400 text-[11px]">({l.name})</span>
+                        </span>
+                        {language === l.code && <Check className="w-3.5 h-3.5 text-teal-700 shrink-0" />}
                       </button>
                     ))}
                   </div>
@@ -140,7 +153,7 @@ export const Header: React.FC<HeaderProps> = ({ onMenuToggle, isMobileMenuOpen }
 
             {/* Quick Demo Role Switcher (Crucial for SIH 2026 Judges) */}
             <div className="hidden md:flex items-center bg-slate-100 p-1 rounded-lg border border-slate-200 text-xs">
-              <span className="px-2 py-1 text-slate-500 font-medium">Demo View:</span>
+              <span className="px-2 py-1 text-slate-500 font-medium">{t('common.demoMode', 'Demo View')}:</span>
               <button
                 onClick={() => {
                   switchDemoRole('student');
@@ -152,7 +165,7 @@ export const Header: React.FC<HeaderProps> = ({ onMenuToggle, isMobileMenuOpen }
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
-                Student
+                {t('dashboard.verifiedScholar', 'Student')}
               </button>
               <button
                 onClick={() => {
@@ -165,7 +178,7 @@ export const Header: React.FC<HeaderProps> = ({ onMenuToggle, isMobileMenuOpen }
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
-                Ministry Admin
+                {t('admin.officerRole', 'Ministry Official')}
               </button>
             </div>
 
@@ -190,13 +203,13 @@ export const Header: React.FC<HeaderProps> = ({ onMenuToggle, isMobileMenuOpen }
               {showNotifDropdown && (
                 <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-xl shadow-xl border border-slate-200 py-2 z-50 animate-in fade-in slide-in-from-top-2">
                   <div className="px-4 py-2.5 border-b border-slate-100 flex items-center justify-between">
-                    <span className="font-semibold text-sm text-slate-900">Notifications</span>
+                    <span className="font-semibold text-sm text-slate-900">{t('nav.notifications', 'Notifications')}</span>
                     <Link
                       to={role === 'admin' ? '/admin/dashboard' : '/student/notifications'}
                       onClick={() => setShowNotifDropdown(false)}
                       className="text-xs text-teal-700 hover:underline font-medium"
                     >
-                      View All
+                      {t('common.view', 'View All')}
                     </Link>
                   </div>
 
@@ -248,7 +261,7 @@ export const Header: React.FC<HeaderProps> = ({ onMenuToggle, isMobileMenuOpen }
                     {user?.name || 'User'}
                   </p>
                   <p className="text-[10px] text-slate-500 capitalize">
-                    {role === 'admin' ? 'Ministry Official' : 'ST Scholar'}
+                    {role === 'admin' ? t('admin.officerRole', 'Ministry Official') : t('dashboard.verifiedScholar', 'ST Scholar')}
                   </p>
                 </div>
                 <ChevronDown className="w-3.5 h-3.5 text-slate-400 hidden sm:block" />
@@ -272,7 +285,7 @@ export const Header: React.FC<HeaderProps> = ({ onMenuToggle, isMobileMenuOpen }
                       onClick={() => setShowProfileDropdown(false)}
                       className="block px-4 py-2 text-xs text-slate-700 hover:bg-slate-50 font-medium"
                     >
-                      Dashboard
+                      {t('nav.dashboard', 'Dashboard')}
                     </Link>
                     {role === 'student' && (
                       <>
@@ -281,14 +294,14 @@ export const Header: React.FC<HeaderProps> = ({ onMenuToggle, isMobileMenuOpen }
                           onClick={() => setShowProfileDropdown(false)}
                           className="block px-4 py-2 text-xs text-slate-700 hover:bg-slate-50 font-medium"
                         >
-                          Digital Document Wallet
+                          {t('nav.documents', 'Digital Document Wallet')}
                         </Link>
                         <Link
                           to="/student/applications"
                           onClick={() => setShowProfileDropdown(false)}
                           className="block px-4 py-2 text-xs text-slate-700 hover:bg-slate-50 font-medium"
                         >
-                          Application Tracker
+                          {t('nav.applications', 'Application Tracker')}
                         </Link>
                       </>
                     )}
@@ -300,7 +313,7 @@ export const Header: React.FC<HeaderProps> = ({ onMenuToggle, isMobileMenuOpen }
                       className="w-full text-left px-4 py-2 text-xs text-rose-600 hover:bg-rose-50 font-semibold flex items-center gap-2"
                     >
                       <LogOut className="w-3.5 h-3.5" />
-                      Sign Out
+                      {t('nav.signOut', 'Sign Out')}
                     </button>
                   </div>
                 </div>

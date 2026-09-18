@@ -8,11 +8,11 @@ import {
   Sparkles, 
   ShieldCheck, 
   ArrowRight, 
-  KeyRound,
   GraduationCap,
   Building2
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useLanguage } from '../../context/LanguageContext';
 import { Button } from '../../components/ui/Button';
 import { Alert } from '../../components/ui/Alert';
 
@@ -24,6 +24,7 @@ export const LoginPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const { login } = useAuth();
+  const { t } = useLanguage();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -39,7 +40,7 @@ export const LoginPage: React.FC = () => {
         navigate('/student/dashboard');
       }
     } catch (err: any) {
-      setError(err.message || 'Login failed. Please check your credentials.');
+      setError(err.message || t('auth.invalidCreds', 'Login failed. Please check your credentials.'));
     } finally {
       setIsLoading(false);
     }
@@ -61,7 +62,7 @@ export const LoginPage: React.FC = () => {
       {/* Top Navigation Row */}
       <div className="sm:mx-auto sm:w-full sm:max-w-md px-4 sm:px-0 mb-4 flex items-center justify-between">
         <Link to="/" className="text-xs font-semibold text-teal-800 hover:text-teal-950 flex items-center gap-1">
-          ← Back to Homepage
+          ← {t('nav.home', 'Back to Homepage')}
         </Link>
         <span className="text-[11px] font-mono text-slate-400">SIH 2026 Prototype</span>
       </div>
@@ -71,12 +72,12 @@ export const LoginPage: React.FC = () => {
           <span className="font-display font-black tracking-tight text-amber-300">SS</span>
         </div>
         <h2 className="font-display text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-          Sign In to <span className="text-teal-800">ScholarSetu</span>
+          {t('auth.signInTitle', 'Sign In to ScholarSetu')}
         </h2>
         <p className="mt-1 text-xs sm:text-sm text-slate-600">
-          Unified Scholarship Portal for Scheduled Tribe Students
+          {t('auth.signInSubtitle', 'Unified Scholarship Portal for Scheduled Tribe Students')}
         </p>
-        <p className="text-[11px] text-slate-400 font-medium">Ministry of Tribal Affairs • Government of India</p>
+        <p className="text-[11px] text-slate-400 font-medium">{t('common.motaTitle', 'Ministry of Tribal Affairs • Government of India')}</p>
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md px-4 sm:px-0 space-y-4">
@@ -85,7 +86,7 @@ export const LoginPage: React.FC = () => {
           <div className="flex items-center justify-between gap-2 mb-2">
             <div className="flex items-center gap-1.5 text-amber-900 font-bold text-xs uppercase tracking-wider">
               <Sparkles className="w-4 h-4 text-amber-600" />
-              <span>SIH 2026 Judges & Demo Access</span>
+              <span>SIH 2026 {t('common.demoMode', 'Demo Access')}</span>
             </div>
             <span className="text-[10px] bg-amber-200/60 text-amber-900 font-bold px-2 py-0.5 rounded">
               One-Click Fill
@@ -104,7 +105,7 @@ export const LoginPage: React.FC = () => {
             >
               <div className="flex items-center gap-1.5 text-teal-800 font-bold mb-0.5">
                 <GraduationCap className="w-3.5 h-3.5" />
-                <span>Student Demo</span>
+                <span>{t('dashboard.verifiedScholar', 'Student Demo')}</span>
               </div>
               <p className="text-[11px] text-slate-500 font-mono truncate">student@demo.com</p>
               <p className="text-[10px] text-teal-700 font-semibold mt-1">Sunita Soren (ST)</p>
@@ -117,7 +118,7 @@ export const LoginPage: React.FC = () => {
             >
               <div className="flex items-center gap-1.5 text-slate-900 font-bold mb-0.5">
                 <Building2 className="w-3.5 h-3.5 text-amber-600" />
-                <span>Ministry Admin</span>
+                <span>{t('admin.officerRole', 'Ministry Admin')}</span>
               </div>
               <p className="text-[11px] text-slate-500 font-mono truncate">admin@demo.com</p>
               <p className="text-[10px] text-amber-700 font-semibold mt-1">Dr. R. Marandi</p>
@@ -129,14 +130,14 @@ export const LoginPage: React.FC = () => {
         <div className="bg-white py-8 px-6 shadow-xl border border-slate-200/90 rounded-2xl sm:px-10">
           <form className="space-y-5" onSubmit={handleSubmit}>
             {error && (
-              <Alert type="error" title="Authentication Error">
+              <Alert type="error" title={t('dashboard.actionRequired', 'Authentication Error')}>
                 {error}
               </Alert>
             )}
 
             <div>
               <label htmlFor="email" className="block text-xs font-semibold text-slate-700 mb-1">
-                Email or Registered Mobile Number
+                {t('auth.emailLabel', 'Email Address')}
               </label>
               <div className="relative rounded-lg shadow-2xs">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
@@ -149,7 +150,7 @@ export const LoginPage: React.FC = () => {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="e.g. student@demo.com"
+                  placeholder="student@demo.com"
                   className="block w-full pl-10 pr-3 py-2.5 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-700 focus:border-teal-700 bg-white"
                 />
               </div>
@@ -158,10 +159,10 @@ export const LoginPage: React.FC = () => {
             <div>
               <div className="flex items-center justify-between mb-1">
                 <label htmlFor="password" className="block text-xs font-semibold text-slate-700">
-                  Password
+                  {t('auth.passwordLabel', 'Password')}
                 </label>
                 <span className="text-[11px] text-teal-700 hover:underline cursor-pointer">
-                  Forgot Password?
+                  {t('auth.forgotPassword', 'Forgot Password?')}
                 </span>
               </div>
               <div className="relative rounded-lg shadow-2xs">
@@ -197,16 +198,16 @@ export const LoginPage: React.FC = () => {
               isLoading={isLoading}
               rightIcon={<ArrowRight className="w-4 h-4" />}
             >
-              Sign In to Portal
+              {t('auth.signInBtn', 'Sign In to Portal')}
             </Button>
           </form>
 
           {/* Registration link */}
           <div className="mt-6 pt-5 border-t border-slate-100 text-center">
             <p className="text-xs text-slate-600">
-              New ST student applying for the first time?{' '}
+              {t('auth.noAccount', "Don't have a scholar account?")}{' '}
               <Link to="/register" className="font-bold text-teal-800 hover:underline">
-                Register with Aadhaar
+                {t('nav.createAccount', 'Register with Aadhaar')}
               </Link>
             </p>
           </div>

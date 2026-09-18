@@ -6,18 +6,15 @@ import {
   FolderLock, 
   FileText, 
   Bell, 
-  BarChart3, 
   CheckSquare, 
   Globe2, 
   Activity,
   Sparkles,
-  HelpCircle,
-  ExternalLink,
   ShieldAlert
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useApp } from '../../context/AppContext';
-import { Badge } from '../ui/Badge';
+import { useLanguage } from '../../context/LanguageContext';
 
 interface SidebarProps {
   onCloseMobile?: () => void;
@@ -34,20 +31,21 @@ interface SidebarLink {
 export const Sidebar: React.FC<SidebarProps> = ({ onCloseMobile }) => {
   const { role, user } = useAuth();
   const { unreadNotificationCount, setIsJagoOpen, activeDemoApplication } = useApp();
+  const { t } = useLanguage();
 
   const studentLinks: SidebarLink[] = [
-    { name: 'Dashboard', to: '/student/dashboard', icon: LayoutDashboard },
-    { name: 'Scholarships', to: '/student/scholarships', icon: GraduationCap },
-    { name: 'Document Wallet', to: '/student/documents', icon: FolderLock },
+    { name: t('nav.dashboard', 'Dashboard'), to: '/student/dashboard', icon: LayoutDashboard },
+    { name: t('nav.scholarships', 'Scholarships'), to: '/student/scholarships', icon: GraduationCap },
+    { name: t('nav.documents', 'Document Wallet'), to: '/student/documents', icon: FolderLock },
     { 
-      name: 'Applications', 
+      name: t('nav.applications', 'Applications'), 
       to: '/student/applications', 
       icon: FileText,
-      badge: activeDemoApplication?.readinessReport?.hasMismatch ? '1 Issue' : undefined,
+      badge: activeDemoApplication?.readinessReport?.hasMismatch ? t('status.mismatchFound', '1 Issue') : undefined,
       badgeVariant: 'warning'
     },
     { 
-      name: 'Notifications', 
+      name: t('nav.notifications', 'Notifications'), 
       to: '/student/notifications', 
       icon: Bell,
       badge: unreadNotificationCount > 0 ? `${unreadNotificationCount}` : undefined,
@@ -56,11 +54,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ onCloseMobile }) => {
   ];
 
   const adminLinks: SidebarLink[] = [
-    { name: 'Overview', to: '/admin/dashboard', icon: LayoutDashboard },
-    { name: 'Applications', to: '/admin/applications', icon: FileText },
-    { name: 'Verification Engine', to: '/admin/verification', icon: CheckSquare },
-    { name: 'Coverage Intelligence', to: '/admin/coverage', icon: Globe2 },
-    { name: 'Activity & Audit', to: '/admin/activity', icon: Activity }
+    { name: t('admin.overview', 'Overview'), to: '/admin/dashboard', icon: LayoutDashboard },
+    { name: t('nav.applications', 'Applications'), to: '/admin/applications', icon: FileText },
+    { name: t('admin.workbench', 'Verification Engine'), to: '/admin/verification', icon: CheckSquare },
+    { name: t('admin.coverage', 'Coverage Intelligence'), to: '/admin/coverage', icon: Globe2 },
+    { name: t('admin.auditLog', 'Activity & Audit'), to: '/admin/activity', icon: Activity }
   ];
 
   const links: SidebarLink[] = role === 'admin' ? adminLinks : studentLinks;
@@ -71,7 +69,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onCloseMobile }) => {
       <div className="px-5 py-4 border-b border-slate-800/80 bg-slate-950/40">
         <div className="flex items-center justify-between">
           <span className="text-[11px] uppercase tracking-wider text-slate-400 font-semibold">
-            {role === 'admin' ? 'Ministry Access' : 'Scholar Portal'}
+            {role === 'admin' ? t('admin.officerRole', 'Ministry Access') : t('nav.studentPortal', 'Scholar Portal')}
           </span>
           <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold ${
             role === 'admin' ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' : 'bg-teal-500/20 text-teal-300 border border-teal-500/30'
@@ -125,7 +123,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onCloseMobile }) => {
             <span className="text-xs font-bold text-teal-300">JAGO AI Assistant</span>
           </div>
           <p className="text-[11px] text-slate-400 leading-relaxed mb-2.5">
-            Need help fixing your application mismatch or checking DBT?
+            {t('jago.welcomeDefault', 'Need help fixing your application mismatch or checking DBT?')}
           </p>
           <button
             onClick={() => {
@@ -135,7 +133,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onCloseMobile }) => {
             className="w-full py-1.5 px-2.5 rounded-lg bg-teal-800 hover:bg-teal-700 text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors shadow-xs"
           >
             <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-            <span>Ask JAGO Now</span>
+            <span>{t('common.askJago', 'Ask JAGO Now')}</span>
           </button>
         </div>
       )}
@@ -144,10 +142,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ onCloseMobile }) => {
       <div className="p-3.5 border-t border-slate-800 text-[11px] text-slate-400 bg-slate-950/60">
         <div className="flex items-center gap-1.5 text-amber-400 font-semibold mb-1">
           <ShieldAlert className="w-3.5 h-3.5 flex-shrink-0" />
-          <span>One-Scholarship Rule</span>
+          <span>{t('common.oneScholarshipRule', 'One-Scholarship Rule')}</span>
         </div>
         <p className="text-[10px] text-slate-400 leading-tight">
-          MoTA enforces single-scholarship compliance per student.
+          {t('common.oneScholarshipRuleDesc', 'MoTA enforces single-scholarship compliance per student.')}
         </p>
       </div>
     </aside>

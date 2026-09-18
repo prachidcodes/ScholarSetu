@@ -2,30 +2,22 @@ import React, { useState, useRef, useEffect } from 'react';
 import { 
   FolderLock, 
   UploadCloud, 
-  CheckCircle2, 
-  Clock, 
-  AlertTriangle, 
   RefreshCw, 
   FileText, 
   ShieldCheck, 
-  Download, 
   Eye, 
-  Trash2, 
-  ExternalLink,
-  Loader2,
-  Sparkles,
-  Check,
-  Building2,
-  Lock,
-  ArrowDownToLine,
-  Info
+  Loader2, 
+  Check, 
+  ArrowDownToLine 
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { useAuth } from '../../context/AuthContext';
+import { useLanguage } from '../../context/LanguageContext';
+import { getTranslatedStatus } from '../../utils/statusTranslation';
 import { StudentDocument } from '../../types';
 import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/Badge';
-import { Card, CardHeader, CardBody } from '../../components/ui/Card';
+import { Card, CardBody } from '../../components/ui/Card';
 import { Modal } from '../../components/ui/Modal';
 import { Alert } from '../../components/ui/Alert';
 import { digilockerService, DigiLockerAvailableDoc, DigiLockerConnectionStatus } from '../../services/digilockerService';
@@ -33,6 +25,7 @@ import { digilockerService, DigiLockerAvailableDoc, DigiLockerConnectionStatus }
 export const DocumentsPage: React.FC = () => {
   const { documents, syncWithDigiLocker, uploadDocument } = useApp();
   const { user } = useAuth();
+  const { t } = useLanguage();
 
   // DigiLocker Connection Status State
   const [digilockerStatus, setDigilockerStatus] = useState<DigiLockerConnectionStatus>(() => 
@@ -149,13 +142,13 @@ export const DocumentsPage: React.FC = () => {
         <div>
           <div className="flex items-center gap-2 text-xs uppercase font-bold tracking-wider text-teal-800 mb-1">
             <FolderLock className="w-4 h-4" />
-            <span>Digital Document Wallet</span>
+            <span>{t('docs.title', 'Digital Document Wallet')}</span>
           </div>
           <h1 className="font-display text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-            Cryptographic Certificate Repository
+            {t('docs.title', 'Cryptographic Certificate Repository')}
           </h1>
           <p className="text-xs sm:text-sm text-slate-600 mt-1 leading-relaxed">
-            Centralized document vault for Scheduled Tribe scholarship applications. Stored documents are reused across all 5 Ministry schemes without repetitive paper submissions.
+            {t('docs.subtitle', 'Centralized document vault for Scheduled Tribe scholarship applications. Stored documents are reused across all 5 Ministry schemes without repetitive paper submissions.')}
           </p>
         </div>
 
@@ -166,7 +159,7 @@ export const DocumentsPage: React.FC = () => {
             leftIcon={<UploadCloud className="w-4 h-4 text-teal-800" />}
             onClick={() => setIsUploadOpen(true)}
           >
-            Upload Certificate
+            {t('docs.uploadBtn', 'Upload Certificate')}
           </Button>
 
           <Button
@@ -176,18 +169,18 @@ export const DocumentsPage: React.FC = () => {
             leftIcon={<RefreshCw className={`w-4 h-4 text-white ${isSyncing ? 'animate-spin' : ''}`} />}
             onClick={handleDigiLockerSync}
           >
-            {isSyncing ? 'Syncing...' : 'Sync with DigiLocker'}
+            {isSyncing ? 'Syncing...' : t('docs.syncDigiLocker', 'Sync with DigiLocker')}
           </Button>
         </div>
       </div>
 
-      {/* Simulated DigiLocker Integration Card (Requirement #14 & #15) */}
+      {/* Simulated DigiLocker Integration Card */}
       <div className="p-5 rounded-2xl bg-gradient-to-r from-teal-900 via-teal-800 to-slate-900 text-white border border-teal-700/60 shadow-md">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1.5">
             <div className="flex items-center gap-2">
               <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-400/20 text-amber-300 border border-amber-400/40">
-                Simulated DigiLocker Connection
+                {t('docs.digiLockerVault', 'DigiLocker Vault')}
               </span>
               <span className={`inline-flex items-center gap-1 text-[11px] font-semibold ${
                 digilockerStatus.isConnected ? 'text-emerald-300' : 'text-slate-300'
@@ -199,7 +192,7 @@ export const DocumentsPage: React.FC = () => {
               </span>
             </div>
             <h3 className="font-display font-bold text-lg text-white">
-              National Digital Locker Adapter
+              {t('docs.digiLockerVault', 'National Digital Locker Adapter')}
             </h3>
             <p className="text-xs text-teal-100/90 max-w-2xl leading-relaxed">
               Demonstrating the adapter pattern for seamless one-click import of verified government records (ST Certificate, Class XII Marksheet, UIDAI e-Aadhaar).
@@ -221,7 +214,7 @@ export const DocumentsPage: React.FC = () => {
               onClick={() => setIsImportModalOpen(true)}
               leftIcon={<ArrowDownToLine className="w-3.5 h-3.5" />}
             >
-              Browse DigiLocker Vault ({availableDigiDocs.length})
+              Browse Vault ({availableDigiDocs.length})
             </Button>
 
             <button
@@ -279,7 +272,7 @@ export const DocumentsPage: React.FC = () => {
                     size="sm"
                     dot
                   >
-                    {doc.status}
+                    {getTranslatedStatus(doc.status, t)}
                   </Badge>
                 </div>
 
@@ -319,7 +312,7 @@ export const DocumentsPage: React.FC = () => {
                 className="flex items-center gap-1 text-xs font-semibold text-teal-800 hover:text-teal-900 transition-colors"
               >
                 <Eye className="w-3.5 h-3.5" />
-                <span>View Certificate</span>
+                <span>{t('docs.view', 'View Certificate')}</span>
               </button>
 
               <button
@@ -337,7 +330,7 @@ export const DocumentsPage: React.FC = () => {
         ))}
       </div>
 
-      {/* DigiLocker Available Documents Modal (Requirement #14 & #15) */}
+      {/* DigiLocker Available Documents Modal */}
       <Modal
         isOpen={isImportModalOpen}
         onClose={() => setIsImportModalOpen(false)}
@@ -347,7 +340,7 @@ export const DocumentsPage: React.FC = () => {
           <div className="flex items-center justify-between w-full text-xs">
             <span className="text-slate-500">Simulated for demonstration</span>
             <Button variant="outline" size="sm" onClick={() => setIsImportModalOpen(false)}>
-              Close
+              {t('common.close', 'Close')}
             </Button>
           </div>
         }
@@ -402,12 +395,12 @@ export const DocumentsPage: React.FC = () => {
       <Modal
         isOpen={isUploadOpen}
         onClose={() => setIsUploadOpen(false)}
-        title="Upload or Update Certificate"
+        title={t('docs.uploadBtn', 'Upload or Update Certificate')}
         subtitle="Supported formats: PDF, JPG, PNG (Max 5MB)"
         footer={
           <div className="flex items-center justify-end gap-2 w-full">
             <Button variant="outline" size="sm" onClick={() => setIsUploadOpen(false)}>
-              Cancel
+              {t('common.close', 'Cancel')}
             </Button>
             <Button
               variant="primary"
@@ -450,7 +443,8 @@ export const DocumentsPage: React.FC = () => {
               onChange={(e) => setDocTitle(e.target.value)}
               placeholder="e.g. Annual Income Certificate (JH/REV/2024/7712)"
               className="w-full px-3 py-2 text-xs sm:text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-teal-700"
-            />
+            >
+            </input>
           </div>
 
           <div>
@@ -524,7 +518,7 @@ export const DocumentsPage: React.FC = () => {
                 Checksum: {viewingDoc.hashChecksum || 'SHA256: 8F9B...'}
               </span>
               <Button variant="outline" size="sm" onClick={() => setViewingDoc(null)}>
-                Close Preview
+                {t('common.close', 'Close Preview')}
               </Button>
             </div>
           }
@@ -555,7 +549,7 @@ export const DocumentsPage: React.FC = () => {
                   <ShieldCheck className="w-4 h-4" />
                   <span>DigiLocker Digitally Signed (Simulated)</span>
                 </div>
-                <span>Status: {viewingDoc.status}</span>
+                <span>Status: {getTranslatedStatus(viewingDoc.status, t)}</span>
               </div>
             </div>
           </div>

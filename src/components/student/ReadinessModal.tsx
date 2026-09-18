@@ -3,16 +3,12 @@ import {
   CheckCircle2, 
   AlertTriangle, 
   ShieldCheck, 
-  HelpCircle, 
-  RotateCcw, 
   FileEdit, 
   UserCheck, 
-  ArrowRight,
-  Loader2,
-  Info,
-  ShieldAlert
+  ArrowRight
 } from 'lucide-react';
 import { ApplicationReadinessReport } from '../../types';
+import { useLanguage } from '../../context/LanguageContext';
 import { Modal } from '../ui/Modal';
 import { Button } from '../ui/Button';
 import { Badge } from '../ui/Badge';
@@ -35,6 +31,7 @@ export const ReadinessModal: React.FC<ReadinessModalProps> = ({
   onRequestManualReview,
   onSubmitDirectly
 }) => {
+  const { t } = useLanguage();
   const [isSubmittingReview, setIsSubmittingReview] = useState(false);
   const [showManualReviewInput, setShowManualReviewInput] = useState(false);
   const [manualReviewNote, setManualReviewNote] = useState(
@@ -65,16 +62,16 @@ export const ReadinessModal: React.FC<ReadinessModalProps> = ({
       title={
         <div className="flex items-center gap-2">
           <ShieldCheck className="w-5 h-5 text-teal-800" />
-          <span>Application Readiness & Registry Verification Report</span>
+          <span>{t('mismatch.title', 'Application Readiness & Registry Verification Report')}</span>
         </div>
       }
-      subtitle="ScholarSetu automated cross-verification engine results"
+      subtitle={t('nav.engine', 'ScholarSetu automated cross-verification engine results')}
       maxWidth="3xl"
       footer={
         <div className="flex flex-col sm:flex-row items-center justify-between w-full gap-3">
           <div className="text-xs text-slate-500 text-left">
-            <span>Critical Rule: </span>
-            <strong className="text-slate-700">A data variance never rejects an application.</strong>
+            <span>{t('mismatch.resolution', 'Critical Rule: ')}</span>
+            <strong className="text-slate-700">{t('mismatch.philosophy', 'An information mismatch is a signal to review — not an automatic rejection.')}</strong>
           </div>
 
           <div className="flex items-center gap-2.5 w-full sm:w-auto">
@@ -89,7 +86,7 @@ export const ReadinessModal: React.FC<ReadinessModalProps> = ({
                     onFixInformation();
                   }}
                 >
-                  Fix Information
+                  {t('mismatch.fixInfo', 'Fix Information')}
                 </Button>
 
                 <Button
@@ -98,7 +95,7 @@ export const ReadinessModal: React.FC<ReadinessModalProps> = ({
                   leftIcon={<UserCheck className="w-4 h-4 text-white" />}
                   onClick={() => setShowManualReviewInput(true)}
                 >
-                  Request Manual Review
+                  {t('mismatch.requestReview', 'Request Manual Review')}
                 </Button>
               </>
             ) : (
@@ -111,7 +108,7 @@ export const ReadinessModal: React.FC<ReadinessModalProps> = ({
                   if (onSubmitDirectly) onSubmitDirectly();
                 }}
               >
-                Proceed to Submit
+                {t('scholarships.applyNow', 'Proceed to Submit')}
               </Button>
             )}
           </div>
@@ -123,7 +120,7 @@ export const ReadinessModal: React.FC<ReadinessModalProps> = ({
         <div className="flex flex-col sm:flex-row items-center gap-4 p-4 rounded-xl bg-slate-50 border border-slate-200">
           <div className={`w-20 h-20 rounded-2xl border-2 flex flex-col items-center justify-center font-bold flex-shrink-0 ${getScoreColor(report.overallScore)}`}>
             <span className="text-2xl leading-none">{report.overallScore}%</span>
-            <span className="text-[10px] uppercase tracking-wider font-semibold mt-1">Readiness</span>
+            <span className="text-[10px] uppercase tracking-wider font-semibold mt-1">{t('readiness.score', 'Readiness')}</span>
           </div>
 
           <div className="flex-1 text-center sm:text-left">
@@ -144,7 +141,7 @@ export const ReadinessModal: React.FC<ReadinessModalProps> = ({
         {/* Mismatch Explanatory Alert (Demo Scenario) */}
         {report.hasMismatch && (
           <Alert type="warning" title="Discrepancy Resolution Protocol">
-            ScholarSetu cross-checks government registries (UIDAI, e-District, UDISE+, Income Tax) in real time. Because income from rural agriculture or unorganized sectors may not match central corporate IT returns, you can either edit your input or request a <strong>Manual Review</strong> by the District Welfare Officer (DWO).
+            {t('mismatch.resolution', 'ScholarSetu cross-checks government registries (UIDAI, e-District, UDISE+, Income Tax) in real time. Because income from rural agriculture or unorganized sectors may not match central corporate IT returns, you can either edit your input or request a Manual Review by the District Welfare Officer (DWO).')}
           </Alert>
         )}
 
@@ -182,13 +179,13 @@ export const ReadinessModal: React.FC<ReadinessModalProps> = ({
                 {/* Values comparison row */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2 text-xs">
                   <div className="p-2.5 rounded-lg bg-white border border-slate-200/80">
-                    <span className="text-[11px] font-semibold text-slate-400 block mb-0.5">Submitted Value:</span>
+                    <span className="text-[11px] font-semibold text-slate-400 block mb-0.5">{t('mismatch.submitted', 'Submitted Value')}:</span>
                     <span className="font-bold text-slate-800">{field.submittedValue}</span>
                   </div>
 
                   <div className="p-2.5 rounded-lg bg-white border border-slate-200/80">
                     <div className="flex items-center justify-between mb-0.5">
-                      <span className="text-[11px] font-semibold text-slate-400">Verified Source Value:</span>
+                      <span className="text-[11px] font-semibold text-slate-400">{t('mismatch.verified', 'Verified Source Value')}:</span>
                       <span className="text-[10px] text-teal-800 font-medium truncate max-w-[140px]">{field.verificationSource}</span>
                     </div>
                     <span className={`font-bold ${!field.isMatch ? 'text-amber-700' : 'text-slate-800'}`}>
@@ -212,7 +209,7 @@ export const ReadinessModal: React.FC<ReadinessModalProps> = ({
           <div className="p-4 bg-amber-50 rounded-xl border border-amber-300 space-y-3 animate-in fade-in">
             <div className="flex items-center gap-2 text-amber-900 font-bold text-sm">
               <UserCheck className="w-4 h-4" />
-              <span>Submit Request for Manual Review</span>
+              <span>{t('mismatch.requestReview', 'Submit Request for Manual Review')}</span>
             </div>
             <p className="text-xs text-amber-800 leading-relaxed">
               Please provide a brief clarification or note for the District Welfare Officer (DWO). You may reference your Tahsildar rural certificate number.
@@ -230,7 +227,7 @@ export const ReadinessModal: React.FC<ReadinessModalProps> = ({
                 size="sm"
                 onClick={() => setShowManualReviewInput(false)}
               >
-                Cancel
+                {t('docs.cancel', 'Cancel')}
               </Button>
               <Button
                 variant="saffron"
@@ -238,7 +235,7 @@ export const ReadinessModal: React.FC<ReadinessModalProps> = ({
                 isLoading={isSubmittingReview}
                 onClick={handleManualReviewSubmit}
               >
-                Confirm Manual Review
+                {t('mismatch.requestReview', 'Confirm Manual Review')}
               </Button>
             </div>
           </div>

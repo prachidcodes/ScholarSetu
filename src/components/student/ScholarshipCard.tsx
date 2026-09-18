@@ -3,15 +3,13 @@ import { Link } from 'react-router-dom';
 import { 
   GraduationCap, 
   ArrowRight, 
-  CheckCircle2, 
-  XCircle, 
-  AlertCircle, 
-  Clock, 
   Banknote,
   ShieldAlert
 } from 'lucide-react';
 import { ScholarshipScheme, UserProfile } from '../../types';
 import { scholarshipService } from '../../services/scholarshipService';
+import { useLanguage } from '../../context/LanguageContext';
+import { getTranslatedStatus } from '../../utils/statusTranslation';
 import { Badge } from '../ui/Badge';
 import { Card, CardBody, CardFooter } from '../ui/Card';
 
@@ -28,7 +26,42 @@ export const ScholarshipCard: React.FC<ScholarshipCardProps> = ({
   applicationStatus,
   applicationId
 }) => {
+  const { t } = useLanguage();
   const eligibility = scholarshipService.checkEligibility(scheme, user);
+
+  const getSchemeTranslated = (s: ScholarshipScheme) => {
+    switch (s.id) {
+      case 'pre-matric':
+        return {
+          name: t('schemes.preMatricName', s.name),
+          desc: t('schemes.preMatricDesc', s.shortDescription)
+        };
+      case 'post-matric':
+        return {
+          name: t('schemes.postMatricName', s.name),
+          desc: t('schemes.postMatricDesc', s.shortDescription)
+        };
+      case 'top-class':
+        return {
+          name: t('schemes.topClassName', s.name),
+          desc: t('schemes.topClassDesc', s.shortDescription)
+        };
+      case 'fellowship':
+        return {
+          name: t('schemes.fellowshipName', s.name),
+          desc: t('schemes.fellowshipDesc', s.shortDescription)
+        };
+      case 'overseas':
+        return {
+          name: t('schemes.overseasName', s.name),
+          desc: t('schemes.overseasDesc', s.shortDescription)
+        };
+      default:
+        return { name: s.name, desc: s.shortDescription };
+    }
+  };
+
+  const translatedScheme = getSchemeTranslated(scheme);
 
   const getFundingBadge = (funding: string) => {
     switch (funding) {
@@ -54,19 +87,19 @@ export const ScholarshipCard: React.FC<ScholarshipCardProps> = ({
 
         {/* Scheme Title */}
         <h3 className="font-display font-bold text-lg text-slate-900 leading-snug mb-2 group-hover:text-teal-800 transition-colors">
-          {scheme.name}
+          {translatedScheme.name}
         </h3>
 
         {/* Short description */}
         <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mb-4 flex-1 line-clamp-3">
-          {scheme.shortDescription}
+          {translatedScheme.desc}
         </p>
 
         {/* Financial assistance highlight */}
         <div className="p-3 bg-stone-50 rounded-lg border border-stone-200/80 mb-4">
           <div className="flex items-center gap-2 text-teal-800 font-semibold text-xs mb-1">
             <Banknote className="w-3.5 h-3.5 flex-shrink-0" />
-            <span>Financial Assistance:</span>
+            <span>Assistance:</span>
           </div>
           <p className="text-xs text-slate-800 font-medium line-clamp-2">
             {scheme.financialAssistance}
@@ -79,32 +112,32 @@ export const ScholarshipCard: React.FC<ScholarshipCardProps> = ({
             <span className="text-slate-500">Your Eligibility:</span>
             {eligibility.isEligible ? (
               <Badge variant="success" size="sm" dot>
-                Eligible
+                {t('status.verified', 'Eligible')}
               </Badge>
             ) : eligibility.isBlockedByOneScholarshipRule ? (
               <Badge variant="warning" size="sm" dot>
-                Blocked (Rule)
+                {t('common.oneScholarshipRule', 'Blocked (Rule)')}
               </Badge>
             ) : (
               <Badge variant="error" size="sm" dot>
-                Not Eligible
+                {t('status.rejected', 'Not Eligible')}
               </Badge>
             )}
           </div>
 
-          {/* If already applied, show current application badge */}
+          {/* If already applied, show current application badge with translated status */}
           {applicationStatus && (
             <div className="flex items-center justify-between text-xs">
-              <span className="text-slate-500">Current Status:</span>
+              <span className="text-slate-500">{t('apps.statusLabel', 'Current Status')}:</span>
               <Badge 
                 variant={
                   applicationStatus === 'Disbursed' ? 'success' :
                   applicationStatus === 'Sanctioned' ? 'purple' :
-                  applicationStatus === 'Under Manual Review' || applicationStatus === 'Deficiency Found' ? 'warning' : 'info'
+                  applicationStatus === 'Under Manual Review' || applicationStatus === 'Deficiency Found' || applicationStatus === 'Mismatch Found' ? 'warning' : 'info'
                 }
                 size="sm"
               >
-                {applicationStatus}
+                {getTranslatedStatus(applicationStatus, t)}
               </Badge>
             </div>
           )}
@@ -122,7 +155,7 @@ export const ScholarshipCard: React.FC<ScholarshipCardProps> = ({
         {eligibility.isBlockedByOneScholarshipRule && (
           <div className="mt-3 p-2.5 rounded-lg bg-amber-50 text-amber-900 border border-amber-200/80 text-[11px] leading-tight flex items-start gap-2">
             <ShieldAlert className="w-3.5 h-3.5 text-amber-600 flex-shrink-0 mt-0.5" />
-            <span>One-Scholarship Rule: You cannot avail this while enrolled in {eligibility.activeSchemeName}.</span>
+            <span>{t('common.oneScholarshipRule', 'One-Scholarship Rule')}: Enrolled in {eligibility.activeSchemeName}.</span>
           </div>
         )}
       </CardBody>
@@ -132,33 +165,25 @@ export const ScholarshipCard: React.FC<ScholarshipCardProps> = ({
           to={`/student/scholarships/${scheme.id}`}
           className="text-xs font-semibold text-slate-600 hover:text-teal-800 transition-colors"
         >
-          View Details
+          {t('common.view', 'View Details')}
         </Link>
 
         {applicationId ? (
           <Link
             to={`/student/applications/${applicationId}`}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-teal-800 text-white text-xs font-semibold hover:bg-teal-900 transition-colors shadow-xs"
+            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-teal-800 hover:bg-teal-900 text-white text-xs font-semibold transition-colors"
           >
-            <span>Track Application</span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </Link>
-        ) : eligibility.isEligible ? (
-          <Link
-            to={`/student/apply/${scheme.id}`}
-            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-teal-800 text-white text-xs font-semibold hover:bg-teal-900 transition-colors shadow-xs"
-          >
-            <span>Apply Now</span>
+            <span>{t('apps.viewDetails', 'Track Application')}</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         ) : (
-          <button
-            disabled
-            title={eligibility.recommendation}
-            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-slate-200 text-slate-500 text-xs font-semibold cursor-not-allowed"
+          <Link
+            to={`/student/scholarships/${scheme.id}`}
+            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-teal-800 hover:bg-teal-900 text-white text-xs font-semibold transition-colors"
           >
-            <span>Apply Now</span>
-          </button>
+            <span>{t('readiness.cardTitle', 'Check Readiness & Apply')}</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
         )}
       </CardFooter>
     </Card>

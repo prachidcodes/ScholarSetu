@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
-import { Search, Filter, ShieldAlert, CheckCircle2, GraduationCap } from 'lucide-react';
+import { Search, GraduationCap } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { useAuth } from '../../context/AuthContext';
+import { useLanguage } from '../../context/LanguageContext';
 import { ScholarshipCard } from '../../components/student/ScholarshipCard';
-import { Card, CardBody } from '../../components/ui/Card';
+import { Card } from '../../components/ui/Card';
 import { Alert } from '../../components/ui/Alert';
 
 export const ScholarshipsPage: React.FC = () => {
   const { schemes, applications } = useApp();
   const { user } = useAuth();
+  const { t } = useLanguage();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedLevel, setSelectedLevel] = useState<string>('all');
 
@@ -31,18 +33,18 @@ export const ScholarshipsPage: React.FC = () => {
       <div>
         <div className="flex items-center gap-2 text-xs uppercase font-bold tracking-wider text-teal-800 mb-1">
           <GraduationCap className="w-4 h-4" />
-          <span>Ministry of Tribal Affairs Central Repository</span>
+          <span>{t('common.motaTitle', 'Ministry of Tribal Affairs Central Repository')}</span>
         </div>
         <h1 className="font-display text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-          Unified Scholarship Schemes Explorer
+          {t('schemes.heading', 'Unified Scholarship Schemes Explorer')}
         </h1>
         <p className="text-xs sm:text-sm text-slate-600 mt-1 max-w-2xl leading-relaxed">
-          Browse and verify your eligibility across the five central scholarship schemes for Scheduled Tribe students.
+          {t('schemes.subheading', 'Browse and verify your eligibility across the five central scholarship schemes for Scheduled Tribe students.')}
         </p>
       </div>
 
       {/* One-Scholarship Policy Advisory */}
-      <Alert type="info" title="Ministry Policy: One Active Scholarship Rule">
+      <Alert type="info" title={`${t('common.oneScholarshipRule', 'One-Scholarship Rule')}: Ministry Policy`}>
         Under Ministry of Tribal Affairs guidelines, an eligible ST scholar can avail benefits under only <strong>one</strong> government scholarship at a time. If you already have an active disbursement or approved scholarship, the portal prevents duplicate applications to ensure compliance and avoid financial clawbacks.
       </Alert>
 

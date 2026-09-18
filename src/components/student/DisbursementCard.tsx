@@ -1,6 +1,7 @@
 import React from 'react';
-import { CheckCircle2, Landmark, ArrowUpRight, ShieldCheck, Banknote } from 'lucide-react';
+import { Landmark, ShieldCheck, Banknote } from 'lucide-react';
 import { DbtDisbursementDetails } from '../../types';
+import { useLanguage } from '../../context/LanguageContext';
 import { Card, CardBody } from '../ui/Card';
 import { Badge } from '../ui/Badge';
 
@@ -13,6 +14,8 @@ export const DisbursementCard: React.FC<DisbursementCardProps> = ({
   details,
   schemeName
 }) => {
+  const { t } = useLanguage();
+
   return (
     <Card className="border-emerald-200/90 bg-gradient-to-br from-emerald-50/60 via-white to-stone-50 overflow-hidden shadow-xs">
       <CardBody className="p-5 sm:p-6">
@@ -24,10 +27,10 @@ export const DisbursementCard: React.FC<DisbursementCardProps> = ({
             <div>
               <div className="flex items-center gap-2">
                 <span className="text-xs uppercase font-bold tracking-wider text-emerald-800">
-                  Direct Benefit Transfer (DBT)
+                  {t('dashboard.dbtReceived', 'Direct Benefit Transfer (DBT)')}
                 </span>
                 <Badge variant="success" size="sm" dot>
-                  Credited
+                  {t('status.disbursed', 'Credited')}
                 </Badge>
               </div>
               <h3 className="text-xl font-bold text-slate-900 mt-0.5">
@@ -37,7 +40,7 @@ export const DisbursementCard: React.FC<DisbursementCardProps> = ({
           </div>
 
           <div className="text-right sm:text-right text-xs">
-            <span className="text-slate-400 block text-[11px]">Disbursed On</span>
+            <span className="text-slate-400 block text-[11px]">{t('apps.disbursedOn', 'Disbursed On')}</span>
             <span className="font-semibold text-slate-800">{details.disbursedDate}</span>
           </div>
         </div>
@@ -45,33 +48,33 @@ export const DisbursementCard: React.FC<DisbursementCardProps> = ({
         {/* Banking and PFMS breakdown grid */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-4 text-xs">
           <div className="p-3 bg-white rounded-lg border border-slate-200/80">
-            <span className="text-slate-400 text-[11px] block mb-0.5">Beneficiary Bank</span>
+            <span className="text-slate-400 text-[11px] block mb-0.5">{t('apps.bankName', 'Beneficiary Bank')}</span>
             <div className="flex items-center gap-1.5 font-semibold text-slate-800">
               <Landmark className="w-3.5 h-3.5 text-teal-800" />
               <span>{details.bankName}</span>
             </div>
             <span className="text-[11px] text-slate-500 mt-0.5 block">
-              A/c: {details.accountNumberMasked}
+              {t('apps.accountMasked', 'A/c')}: {details.accountNumberMasked}
             </span>
           </div>
 
           <div className="p-3 bg-white rounded-lg border border-slate-200/80">
-            <span className="text-slate-400 text-[11px] block mb-0.5">PFMS Reference</span>
+            <span className="text-slate-400 text-[11px] block mb-0.5">{t('apps.pfmsRef', 'PFMS Reference')}</span>
             <span className="font-mono font-bold text-slate-800 break-all">
               {details.transactionReference}
             </span>
             <span className="text-[10px] text-emerald-700 block mt-0.5 font-medium">
-              Mode: Aadhaar Payment Bridge (APBS)
+              {t('apps.paymentMode', 'Mode')}: Aadhaar Payment Bridge (APBS)
             </span>
           </div>
 
           <div className="p-3 bg-white rounded-lg border border-slate-200/80 flex flex-col justify-center">
             <div className="flex items-center gap-1 text-emerald-700 font-semibold mb-0.5">
               <ShieldCheck className="w-4 h-4" />
-              <span>Ministry Verified</span>
+              <span>{t('apps.ministryVerified', 'Ministry Verified')}</span>
             </div>
             <span className="text-[11px] text-slate-500 leading-tight">
-              100% direct central subsidy with zero intermediary deduction.
+              {t('apps.directCentralSubsidy', '100% direct central subsidy with zero intermediary deduction.')}
             </span>
           </div>
         </div>

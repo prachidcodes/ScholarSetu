@@ -6,16 +6,15 @@ import {
   CheckCircle2, 
   AlertTriangle, 
   Banknote, 
-  ShieldCheck, 
   UserCheck, 
   FileEdit, 
   Clock, 
-  Building,
   Sparkles,
-  RefreshCw,
   FolderLock
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
+import { useLanguage } from '../../context/LanguageContext';
+import { getTranslatedStatus } from '../../utils/statusTranslation';
 import { TimelineView } from '../../components/student/TimelineView';
 import { DisbursementCard } from '../../components/student/DisbursementCard';
 import { Button } from '../../components/ui/Button';
@@ -34,6 +33,7 @@ export const ApplicationDetailPage: React.FC = () => {
     openJagoWithPrompt,
     setIsJagoOpen
   } = useApp();
+  const { t } = useLanguage();
 
   const app = applications.find((a) => a.id === appId) || applications[0];
 
@@ -54,7 +54,7 @@ export const ApplicationDetailPage: React.FC = () => {
       <div className="p-8 text-center">
         <h2 className="text-xl font-bold text-slate-800">Application Not Found</h2>
         <Link to="/student/applications" className="text-teal-800 text-sm font-semibold underline mt-2 block">
-          Back to Applications
+          {t('common.back', 'Back to Applications')}
         </Link>
       </div>
     );
@@ -117,7 +117,7 @@ export const ApplicationDetailPage: React.FC = () => {
           className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-teal-800 transition-colors mb-2"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>Back to Applications</span>
+          <span>{t('common.back', 'Back to Applications')}</span>
         </Link>
 
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -127,7 +127,7 @@ export const ApplicationDetailPage: React.FC = () => {
                 {app.id}
               </span>
               <span className="text-xs text-slate-500">
-                Submitted: {app.submissionDate || new Date(app.submittedAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
+                {t('apps.submittedOn', 'Submitted')}: {app.submissionDate || new Date(app.submittedAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
               </span>
             </div>
             <h1 className="font-display text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
@@ -139,7 +139,7 @@ export const ApplicationDetailPage: React.FC = () => {
             <button
               onClick={() => {
                 if (openJagoWithPrompt) {
-                  openJagoWithPrompt('Why is my application flagged?');
+                  openJagoWithPrompt(t('jago.askHelp', 'Why is my application flagged?'));
                 } else {
                   setIsJagoOpen(true);
                 }
@@ -147,7 +147,7 @@ export const ApplicationDetailPage: React.FC = () => {
               className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-white border border-teal-700/30 text-teal-800 text-xs font-semibold hover:bg-teal-50 transition-colors shadow-2xs"
             >
               <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-              <span>Ask JAGO About This</span>
+              <span>{t('jago.assistantName', 'Ask JAGO About This')}</span>
             </button>
           </div>
         </div>
@@ -163,13 +163,13 @@ export const ApplicationDetailPage: React.FC = () => {
               </div>
               <div>
                 <h3 className="font-bold text-amber-950 text-base">
-                  Verification Discrepancy: Income Cross-Check Variance
+                  {t('mismatch.flagNotice', 'Verification Discrepancy: Income Cross-Check Variance')}
                 </h3>
                 <p className="text-xs text-amber-900 mt-1 leading-relaxed max-w-2xl">
-                  Submitted Income: <strong>₹{(app.annualIncome || app.submittedAnnualIncome || 200000).toLocaleString('en-IN')}</strong> | Verified Central Source: <strong>₹3,50,000</strong>.
+                  {t('mismatch.submitted', 'Submitted Income')}: <strong>₹{(app.annualIncome || app.submittedAnnualIncome || 200000).toLocaleString('en-IN')}</strong> | {t('mismatch.verified', 'Verified Central Source')}: <strong>₹3,50,000</strong>.
                 </p>
                 <p className="text-xs text-amber-800 mt-1">
-                  <strong>Important Rule:</strong> Under ScholarSetu, discrepancies never result in automatic disqualification. You have the right to edit or appeal.
+                  <strong>{t('mismatch.philosophy', 'An information mismatch is a signal to review — not an automatic rejection.')}</strong>
                 </p>
               </div>
             </div>
@@ -181,7 +181,7 @@ export const ApplicationDetailPage: React.FC = () => {
                 leftIcon={<FileEdit className="w-4 h-4 text-teal-800" />}
                 onClick={() => setIsFixModalOpen(true)}
               >
-                Fix Information
+                {t('mismatch.fixInfo', 'Fix Information')}
               </Button>
 
               <Button
@@ -190,7 +190,7 @@ export const ApplicationDetailPage: React.FC = () => {
                 leftIcon={<UserCheck className="w-4 h-4 text-white" />}
                 onClick={() => setIsReviewModalOpen(true)}
               >
-                Request Manual Review
+                {t('mismatch.requestReview', 'Request Manual Review')}
               </Button>
             </div>
           </div>
@@ -209,7 +209,7 @@ export const ApplicationDetailPage: React.FC = () => {
         <div>
           <h3 className="text-base font-bold text-slate-900 mb-3 flex items-center gap-2">
             <Banknote className="w-4 h-4 text-emerald-700" />
-            <span>Direct Benefit Transfer (DBT) Release Confirmed</span>
+            <span>{t('dashboard.dbtReceived', 'Direct Benefit Transfer (DBT) Release Confirmed')}</span>
           </h3>
           <DisbursementCard
             details={app.disbursementDetails}
@@ -223,7 +223,7 @@ export const ApplicationDetailPage: React.FC = () => {
         {/* Left 1 Col: Lifecycle Timeline */}
         <div className="space-y-6">
           <Card>
-            <CardHeader title="Application Lifecycle Tracker" icon={<Clock className="w-5 h-5" />} />
+            <CardHeader title={t('apps.statusLabel', 'Application Lifecycle Tracker')} icon={<Clock className="w-5 h-5" />} />
             <CardBody>
               <TimelineView
                 timeline={app.timeline || []}
@@ -234,26 +234,26 @@ export const ApplicationDetailPage: React.FC = () => {
 
           {/* Student Profile Snapshot */}
           <Card>
-            <CardHeader title="Beneficiary Data" />
+            <CardHeader title={t('profile.title', 'Beneficiary Data')} />
             <CardBody className="space-y-3 text-xs divide-y divide-slate-100">
               <div className="flex justify-between pt-1">
-                <span className="text-slate-500">Student Name:</span>
+                <span className="text-slate-500">{t('profile.fullName', 'Student Name')}:</span>
                 <span className="font-bold text-slate-900">{app.studentName}</span>
               </div>
               <div className="flex justify-between pt-2">
-                <span className="text-slate-500">Aadhaar (Masked):</span>
+                <span className="text-slate-500">{t('profile.aadhaarNumber', 'Aadhaar (Masked)')}:</span>
                 <span className="font-mono text-slate-800">{app.studentAadhaarMasked || app.aadhaarNumber || 'XXXX-XXXX-8924'}</span>
               </div>
               <div className="flex justify-between pt-2">
-                <span className="text-slate-500">Institution:</span>
+                <span className="text-slate-500">{t('profile.institution', 'Institution')}:</span>
                 <span className="font-semibold text-slate-800 text-right">{app.institutionName}</span>
               </div>
               <div className="flex justify-between pt-2">
-                <span className="text-slate-500">Course / Branch:</span>
+                <span className="text-slate-500">{t('profile.course', 'Course / Branch')}:</span>
                 <span className="font-semibold text-slate-800 text-right">{app.course || app.courseName || 'Degree Course'}</span>
               </div>
               <div className="flex justify-between pt-2">
-                <span className="text-slate-500">Declared Income:</span>
+                <span className="text-slate-500">{t('profile.annualIncome', 'Declared Income')}:</span>
                 <span className="font-bold text-slate-900">₹{(app.annualIncome || app.submittedAnnualIncome || 200000).toLocaleString('en-IN')}/yr</span>
               </div>
             </CardBody>
@@ -264,8 +264,8 @@ export const ApplicationDetailPage: React.FC = () => {
         <div className="lg:col-span-2 space-y-6">
           <Card>
             <CardHeader
-              title="Automated Cross-Verification Engine Audit"
-              subtitle={`Current Application Readiness Score: ${app.readinessScore}%`}
+              title={t('readiness.title', 'Automated Cross-Verification Engine Audit')}
+              subtitle={`${t('readiness.score', 'Score')}: ${app.readinessScore}%`}
               action={
                 <Badge variant={app.readinessScore === 100 ? 'success' : 'warning'} size="sm">
                   {app.readinessScore === 100 ? '100% Cleared' : 'Action Required'}
@@ -301,13 +301,13 @@ export const ApplicationDetailPage: React.FC = () => {
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3 text-xs">
                       <div className="p-2.5 rounded-lg bg-white border border-slate-200">
-                        <span className="text-[11px] text-slate-400 block mb-0.5">Submitted Value:</span>
+                        <span className="text-[11px] text-slate-400 block mb-0.5">{t('mismatch.submitted', 'Submitted Value')}:</span>
                         <span className="font-bold text-slate-800">{f.submittedValue}</span>
                       </div>
 
                       <div className="p-2.5 rounded-lg bg-white border border-slate-200">
                         <div className="flex items-center justify-between mb-0.5">
-                          <span className="text-[11px] text-slate-400">Verified Value:</span>
+                          <span className="text-[11px] text-slate-400">{t('mismatch.verified', 'Verified Value')}:</span>
                           <span className="text-[10px] text-teal-800 font-medium truncate max-w-[130px]">{f.verificationSource}</span>
                         </div>
                         <span className={`font-bold ${!f.isMatch ? 'text-amber-800' : 'text-slate-800'}`}>
@@ -317,7 +317,7 @@ export const ApplicationDetailPage: React.FC = () => {
                     </div>
 
                     <p className="text-xs text-slate-600 mt-2.5 bg-slate-50 p-2.5 rounded-lg border border-slate-100 leading-relaxed">
-                      <strong className="text-slate-800">Verification Source: </strong>
+                      <strong className="text-slate-800">{t('mismatch.verified', 'Verification Source')}: </strong>
                       {f.verificationSource} — {f.explanation}
                     </p>
                   </div>
@@ -328,7 +328,7 @@ export const ApplicationDetailPage: React.FC = () => {
 
           {/* Attached Verified Documents list */}
           <Card>
-            <CardHeader title="Attached Cryptographic Documents" icon={<FolderLock className="w-5 h-5" />} />
+            <CardHeader title={t('docs.title', 'Attached Cryptographic Documents')} icon={<FolderLock className="w-5 h-5" />} />
             <CardBody>
               <div className="space-y-2">
                 {app.documents?.map((doc: any) => (
@@ -341,7 +341,7 @@ export const ApplicationDetailPage: React.FC = () => {
                       </div>
                     </div>
 
-                    <Badge variant="success" size="sm">Verified</Badge>
+                    <Badge variant="success" size="sm">{getTranslatedStatus(doc.status, t)}</Badge>
                   </div>
                 ))}
               </div>
@@ -354,12 +354,12 @@ export const ApplicationDetailPage: React.FC = () => {
       <Modal
         isOpen={isFixModalOpen}
         onClose={() => setIsFixModalOpen(false)}
-        title="Update Annual Family Income"
+        title={t('mismatch.fixInfo', 'Update Annual Family Income')}
         subtitle="Correct any clerical or gross calculation difference"
         footer={
           <div className="flex items-center justify-end gap-2 w-full">
             <Button variant="outline" size="sm" onClick={() => setIsFixModalOpen(false)}>
-              Cancel
+              {t('common.close', 'Cancel')}
             </Button>
             <Button
               variant="primary"
@@ -412,12 +412,12 @@ export const ApplicationDetailPage: React.FC = () => {
       <Modal
         isOpen={isReviewModalOpen}
         onClose={() => setIsReviewModalOpen(false)}
-        title="Request District Welfare Officer Manual Review"
+        title={t('mismatch.requestReview', 'Request District Welfare Officer Manual Review')}
         subtitle="Explain your rural non-taxable income certification"
         footer={
           <div className="flex items-center justify-end gap-2 w-full">
             <Button variant="outline" size="sm" onClick={() => setIsReviewModalOpen(false)}>
-              Cancel
+              {t('common.close', 'Cancel')}
             </Button>
             <Button
               variant="saffron"

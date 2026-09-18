@@ -1,6 +1,8 @@
 import React from 'react';
-import { Check, Clock, AlertTriangle, ArrowRight, ShieldCheck, Banknote } from 'lucide-react';
+import { Check, AlertTriangle } from 'lucide-react';
 import { ApplicationStatus } from '../../types';
+import { useLanguage } from '../../context/LanguageContext';
+import { getTranslatedStatus } from '../../utils/statusTranslation';
 
 interface TimelineStep {
   status: ApplicationStatus;
@@ -16,12 +18,15 @@ interface TimelineViewProps {
 }
 
 export const TimelineView: React.FC<TimelineViewProps> = ({ timeline, currentStatus }) => {
+  const { t } = useLanguage();
+
   return (
     <div className="relative pl-6 sm:pl-8 space-y-6 before:absolute before:left-3 sm:before:left-4 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-200">
       {timeline.map((step, idx) => {
         const isCurrent = step.status === currentStatus;
         const isCompleted = step.completed;
         const isReviewFlag = step.status === 'Under Manual Review' || step.status === 'Deficiency Found';
+        const displayLabel = getTranslatedStatus(step.status, t) || step.label;
 
         return (
           <div key={idx} className="relative group">
@@ -58,12 +63,12 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ timeline, currentSta
             >
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-1">
                 <h4 className="font-bold text-sm sm:text-base text-slate-900 flex items-center gap-2">
-                  <span>{step.label}</span>
+                  <span>{displayLabel}</span>
                   {isCurrent && (
                     <span className={`px-2 py-0.5 text-[10px] uppercase font-bold rounded ${
                       isReviewFlag ? 'bg-amber-100 text-amber-900 border border-amber-300' : 'bg-teal-100 text-teal-900'
                     }`}>
-                      Current Stage
+                      {t('apps.statusLabel', 'Current Stage')}
                     </span>
                   )}
                 </h4>

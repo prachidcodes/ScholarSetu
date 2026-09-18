@@ -3,22 +3,19 @@ import { Link, useNavigate } from 'react-router-dom';
 import { 
   FileText, 
   Search, 
-  Filter, 
   Eye, 
-  CheckCircle2, 
-  AlertTriangle, 
-  CheckSquare, 
-  UserCheck, 
-  Banknote,
-  Download
+  CheckSquare 
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
-import { Card, CardHeader, CardBody } from '../../components/ui/Card';
+import { useLanguage } from '../../context/LanguageContext';
+import { getTranslatedStatus } from '../../utils/statusTranslation';
+import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/Badge';
 
 export const AdminApplicationsPage: React.FC = () => {
   const { applications, adminResolveReview } = useApp();
+  const { t } = useLanguage();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [schemeFilter, setSchemeFilter] = useState('all');
@@ -37,17 +34,18 @@ export const AdminApplicationsPage: React.FC = () => {
   });
 
   const getStatusBadge = (status: string) => {
+    const translated = getTranslatedStatus(status, t);
     switch (status) {
       case 'Disbursed':
-        return <Badge variant="success" size="sm" dot>Disbursed</Badge>;
+        return <Badge variant="success" size="sm" dot>{translated}</Badge>;
       case 'Sanctioned':
-        return <Badge variant="purple" size="sm" dot>Sanctioned</Badge>;
+        return <Badge variant="purple" size="sm" dot>{translated}</Badge>;
       case 'Under Manual Review':
-        return <Badge variant="warning" size="sm" dot>Under Manual Review</Badge>;
+        return <Badge variant="warning" size="sm" dot>{translated}</Badge>;
       case 'Under Verification':
-        return <Badge variant="info" size="sm" dot>Under Verification</Badge>;
+        return <Badge variant="info" size="sm" dot>{translated}</Badge>;
       default:
-        return <Badge variant="neutral" size="sm" dot>{status}</Badge>;
+        return <Badge variant="neutral" size="sm" dot>{translated}</Badge>;
     }
   };
 
@@ -58,10 +56,10 @@ export const AdminApplicationsPage: React.FC = () => {
         <div>
           <div className="flex items-center gap-2 text-xs uppercase font-bold tracking-wider text-teal-800 mb-1">
             <FileText className="w-4 h-4" />
-            <span>National Registry Database</span>
+            <span>{t('admin.allApplications', 'National Registry Database')}</span>
           </div>
           <h1 className="font-display text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-            Application Lifecycle Management
+            {t('admin.allApplications', 'Application Lifecycle Management')}
           </h1>
           <p className="text-xs sm:text-sm text-slate-600 mt-1">
             Browse, filter, and take administrative actions across all Scheduled Tribe student scholarship dossiers.
@@ -70,7 +68,7 @@ export const AdminApplicationsPage: React.FC = () => {
 
         <Link to="/admin/verification">
           <Button variant="saffron" size="sm" leftIcon={<CheckSquare className="w-4 h-4 text-white" />}>
-            Open Verification Engine
+            {t('admin.manualReviewQueue', 'Open Verification Engine')}
           </Button>
         </Link>
       </div>
@@ -128,15 +126,13 @@ export const AdminApplicationsPage: React.FC = () => {
                 <th className="p-4">Student & Domicile</th>
                 <th className="p-4">Scheme Applied</th>
                 <th className="p-4">Institution</th>
-                <th className="p-4 text-center">Readiness Score</th>
-                <th className="p-4">Status</th>
+                <th className="p-4 text-center">{t('readiness.score', 'Readiness Score')}</th>
+                <th className="p-4">{t('apps.statusLabel', 'Status')}</th>
                 <th className="p-4 text-right">Administrative Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {filtered.map((app) => {
-                const hasMismatch = app.readinessReport?.hasMismatch;
-
                 return (
                   <tr key={app.id} className="hover:bg-slate-50/80 transition-colors">
                     <td className="p-4">

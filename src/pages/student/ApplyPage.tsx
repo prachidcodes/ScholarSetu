@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { 
   Check, 
@@ -6,17 +6,15 @@ import {
   ArrowLeft, 
   ShieldCheck, 
   Sparkles, 
-  FileText, 
   User, 
   GraduationCap, 
   Banknote, 
   FolderLock, 
-  AlertTriangle,
-  Loader2,
   FileCheck
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { useAuth } from '../../context/AuthContext';
+import { useLanguage } from '../../context/LanguageContext';
 import { verificationService } from '../../services/verificationService';
 import { ReadinessModal } from '../../components/student/ReadinessModal';
 import { Button } from '../../components/ui/Button';
@@ -26,8 +24,9 @@ import { Alert } from '../../components/ui/Alert';
 
 export const ApplyPage: React.FC = () => {
   const { schemeId } = useParams<{ schemeId: string }>();
-  const { schemes, documents, createApplication, requestManualReview } = useApp();
+  const { schemes, documents, createApplication } = useApp();
   const { user } = useAuth();
+  const { t } = useLanguage();
   const navigate = useNavigate();
 
   const scheme = schemes.find((s) => s.id === schemeId) || schemes[1]; // defaults to Post-Matric
@@ -104,7 +103,6 @@ export const ApplyPage: React.FC = () => {
 
   // Student selects "Fix Information"
   const handleFixInformation = () => {
-    // Jump student back to Step 3 (Income) so they can correct the number
     setCurrentStep(3);
   };
 
@@ -115,7 +113,6 @@ export const ApplyPage: React.FC = () => {
       manualReviewRequested: true,
       manualReviewNote: note
     }));
-    // Now proceed directly to submit with "Under Manual Review" flag
     await submitApplicationData(true, note);
   };
 
@@ -123,7 +120,6 @@ export const ApplyPage: React.FC = () => {
   const submitApplicationData = async (manualReview = false, note?: string) => {
     setIsSubmittingFinal(true);
     try {
-      // If readiness report not generated yet, calculate now
       const report = readinessReport || (await verificationService.verifyApplicationData(scheme.id, formData));
 
       const newApp = await createApplication({
@@ -195,11 +191,11 @@ export const ApplyPage: React.FC = () => {
             className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-teal-800 transition-colors mb-2"
           >
             <ArrowLeft className="w-4 h-4" />
-            <span>Back to Schemes</span>
+            <span>{t('nav.scholarships', 'Back to Schemes')}</span>
           </Link>
           <div className="flex items-center gap-2">
             <h1 className="font-display text-2xl font-black text-slate-900 tracking-tight">
-              Application for {scheme.name}
+              {t('scholarships.applyNow', 'Application for')} {scheme.name}
             </h1>
             <Badge variant="saffron" size="sm">{scheme.code}</Badge>
           </div>
@@ -490,7 +486,7 @@ export const ApplyPage: React.FC = () => {
                         <input
                           type="checkbox"
                           checked={isSelected}
-                          onChange={() => {}} // handled by div
+                          onChange={() => {}}
                           className="h-4 w-4 rounded border-slate-300 text-teal-800 focus:ring-teal-700"
                         />
                         <div>
@@ -502,7 +498,7 @@ export const ApplyPage: React.FC = () => {
                       </div>
 
                       <Badge variant="success" size="sm">
-                        Verified
+                        {t('docs.verified', 'Verified')}
                       </Badge>
                     </div>
                   );
@@ -537,7 +533,7 @@ export const ApplyPage: React.FC = () => {
               <div className="p-5 rounded-2xl bg-gradient-to-br from-amber-50/80 via-white to-orange-50/40 border-2 border-amber-300/90 shadow-sm space-y-3">
                 <div className="flex items-center gap-2 text-amber-950 font-bold text-base">
                   <Sparkles className="w-5 h-5 text-amber-600" />
-                  <span>Application Readiness & Resolution Engine</span>
+                  <span>{t('mismatch.title', 'Application Readiness & Resolution Engine')}</span>
                 </div>
                 <p className="text-xs text-slate-600 leading-relaxed">
                   Before you submit to the Ministry, run our real-time cross-verification engine. ScholarSetu compares your declared information against UIDAI, e-District, and revenue records to prevent processing delays.
@@ -552,7 +548,7 @@ export const ApplyPage: React.FC = () => {
                     onClick={handleCheckReadiness}
                     leftIcon={<ShieldCheck className="w-4 h-4 text-white" />}
                   >
-                    Check Application Readiness
+                    {t('readiness.checkButton', 'Check Application Readiness')}
                   </Button>
                 </div>
               </div>
@@ -563,7 +559,7 @@ export const ApplyPage: React.FC = () => {
                   <div className="flex items-center justify-between mb-2">
                     <span className="font-bold text-slate-900">Latest Readiness Check:</span>
                     <Badge variant={readinessReport.hasMismatch ? 'warning' : 'success'} size="sm">
-                      Readiness Score: {readinessReport.overallScore}%
+                      {t('readiness.score', 'Readiness Score')}: {readinessReport.overallScore}%
                     </Badge>
                   </div>
                   <p className="text-slate-600">{readinessReport.summary}</p>
@@ -632,7 +628,7 @@ export const ApplyPage: React.FC = () => {
                   onClick={() => setCurrentStep((prev) => prev - 1)}
                   leftIcon={<ArrowLeft className="w-4 h-4" />}
                 >
-                  Previous
+                  {t('common.previous', 'Previous')}
                 </Button>
               ) : (
                 <div />
@@ -646,7 +642,7 @@ export const ApplyPage: React.FC = () => {
                   onClick={() => setCurrentStep((prev) => prev + 1)}
                   rightIcon={<ArrowRight className="w-4 h-4" />}
                 >
-                  Save & Continue
+                  {t('common.next', 'Save & Continue')}
                 </Button>
               ) : (
                 <Button

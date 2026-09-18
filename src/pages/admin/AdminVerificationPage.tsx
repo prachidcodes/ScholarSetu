@@ -5,16 +5,12 @@ import {
   AlertTriangle, 
   UserCheck, 
   FileText, 
-  Building, 
   CheckCircle2, 
-  XCircle, 
-  Sparkles,
-  ArrowRight,
-  RotateCcw,
-  Send,
   MessageSquare
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
+import { useLanguage } from '../../context/LanguageContext';
+import { getTranslatedStatus } from '../../utils/statusTranslation';
 import { Card, CardHeader, CardBody } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/Badge';
@@ -22,6 +18,7 @@ import { Alert } from '../../components/ui/Alert';
 
 export const AdminVerificationPage: React.FC = () => {
   const { applications, adminResolveReview } = useApp();
+  const { t } = useLanguage();
 
   // Find the primary demo case with variance (Sunita Soren)
   const targetApp = applications.find(
@@ -58,13 +55,13 @@ export const AdminVerificationPage: React.FC = () => {
       <div>
         <div className="flex items-center gap-2 text-xs uppercase font-bold tracking-wider text-amber-700 mb-1">
           <CheckSquare className="w-4 h-4" />
-          <span>Application Readiness & Resolution Engine</span>
+          <span>{t('admin.manualReviewQueue', 'Application Readiness & Resolution Engine')}</span>
         </div>
         <h1 className="font-display text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-          District Welfare Officer (DWO) Resolution Workbench
+          {t('admin.manualReviewQueue', 'District Welfare Officer (DWO) Resolution Workbench')}
         </h1>
         <p className="text-xs sm:text-sm text-slate-600 mt-1 max-w-2xl leading-relaxed">
-          ScholarSetu core resolution pipeline. Welfare officers review automated registry flags and exercise discretion to resolve data discrepancies without rejecting tribal students.
+          {t('mismatch.philosophy', 'An information mismatch is a signal to review — not an automatic rejection.')}
         </p>
       </div>
 
@@ -90,7 +87,7 @@ export const AdminVerificationPage: React.FC = () => {
                 subtitle={`Application ID: ${targetApp.id} • Scheme: ${targetApp.schemeName}`}
                 action={
                   <Badge variant={targetApp.status === 'Disbursed' ? 'success' : targetApp.readinessReport?.hasMismatch ? 'warning' : 'info'} size="sm">
-                    {targetApp.status}
+                    {getTranslatedStatus(targetApp.status, t)}
                   </Badge>
                 }
               />
@@ -110,7 +107,7 @@ export const AdminVerificationPage: React.FC = () => {
                 {/* Field-by-Field Audit Results */}
                 <div>
                   <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">
-                    Automated Registry Cross-Checks (Readiness Score: {targetApp.readinessScore}%)
+                    Automated Registry Cross-Checks ({t('readiness.score', 'Readiness Score')}: {targetApp.readinessScore}%)
                   </h4>
 
                   <div className="divide-y divide-slate-200 border border-slate-200 rounded-xl overflow-hidden">
@@ -125,11 +122,11 @@ export const AdminVerificationPage: React.FC = () => {
 
                         <div className="grid grid-cols-2 gap-3 text-xs">
                           <div className="p-2 bg-white rounded border border-slate-200">
-                            <span className="text-[10px] text-slate-400 block">Submitted by Student:</span>
+                            <span className="text-[10px] text-slate-400 block">{t('mismatch.submitted', 'Submitted by Student')}:</span>
                             <span className="font-bold text-slate-800">{f.submittedValue}</span>
                           </div>
                           <div className="p-2 bg-white rounded border border-slate-200">
-                            <span className="text-[10px] text-slate-400 block">Verified Central Source ({f.verificationSource}):</span>
+                            <span className="text-[10px] text-slate-400 block">{t('mismatch.verified', 'Verified Central Source')} ({f.verificationSource}):</span>
                             <span className={`font-bold ${!f.isMatch ? 'text-amber-800' : 'text-slate-800'}`}>
                               {f.verifiedValue}
                             </span>
@@ -147,7 +144,7 @@ export const AdminVerificationPage: React.FC = () => {
                 {/* Attached Physical Certificate Status */}
                 <div>
                   <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
-                    Verified Digital Certificates on Record
+                    {t('docs.title', 'Verified Digital Certificates on Record')}
                   </h4>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
                     <div className="p-3 bg-slate-50 rounded-lg border flex items-center justify-between">
@@ -239,7 +236,7 @@ export const AdminVerificationPage: React.FC = () => {
                 <div className="p-3 bg-stone-50 rounded-lg border border-stone-200 text-[11px] text-slate-600 space-y-1">
                   <p className="font-bold text-slate-900">MoTA Rule 14(b) Directive:</p>
                   <p>
-                    "No Scheduled Tribe student shall suffer scholarship cancellation solely on automated database mismatches where physical revenue documentation is validated by the District Welfare Officer."
+                    "{t('mismatch.philosophy', 'An information mismatch is a signal to review — not an automatic rejection.')}"
                   </p>
                 </div>
               </CardBody>

@@ -4,22 +4,21 @@ import {
   Sparkles, 
   X, 
   Send, 
-  Bot, 
   User, 
   ExternalLink, 
-  HelpCircle, 
   RefreshCw,
-  FileSearch,
-  MessageSquareQuote
+  FileSearch
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useApp } from '../../context/AppContext';
+import { useLanguage } from '../../context/LanguageContext';
 import { jagoService } from '../../services/jagoService';
 import { JagoChatMessage } from '../../types';
 import { Badge } from '../ui/Badge';
 
 export const JagoAssistant: React.FC = () => {
   const { user, role } = useAuth();
+  const { language, t } = useLanguage();
   const { 
     isJagoOpen, 
     setIsJagoOpen, 
@@ -36,13 +35,14 @@ export const JagoAssistant: React.FC = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
 
-  // Initialize greeting with context
+  // Reset or update greeting when language changes or initially loads
   useEffect(() => {
-    if (messages.length === 0) {
-      const initial = jagoService.getInitialGreeting(user, activeDemoApplication);
+    const initial = jagoService.getInitialGreeting(user, activeDemoApplication, language, t);
+    // If only initial greeting was present or empty, update it to the new language
+    if (messages.length <= 1) {
       setMessages(initial);
     }
-  }, [user, activeDemoApplication, messages.length]);
+  }, [language, user, activeDemoApplication]);
 
   // Handle pending external prompt trigger
   useEffect(() => {
@@ -88,7 +88,9 @@ export const JagoAssistant: React.FC = () => {
       const response = await jagoService.processUserMessage(query, {
         user,
         applications,
-        activeApp: activeDemoApplication
+        activeApp: activeDemoApplication,
+        language,
+        t
       });
       setMessages((prev) => [...prev, response]);
     } catch (err) {
@@ -97,7 +99,7 @@ export const JagoAssistant: React.FC = () => {
         {
           id: `err-${Date.now()}`,
           sender: 'jago',
-          text: 'I encountered an issue processing that query. Please ask me about your scholarship status, eligibility, or income verification query.',
+          text: t('jago.welcomeDefault', 'I encountered an issue processing that query. Please ask me about your scholarship status, eligibility, or income verification query.'),
           timestamp: 'Just now'
         }
       ]);
@@ -109,16 +111,16 @@ export const JagoAssistant: React.FC = () => {
   const handleQuickAction = (action: string) => {
     switch (action) {
       case 'why_flagged':
-        handleSendMessage('Why is my application flagged?');
+        handleSendMessage(t('jago.qFlagged', 'Why is my application flagged?'));
         break;
       case 'disbursement_status':
-        handleSendMessage('Check my disbursement status');
+        handleSendMessage(t('jago.qDisbursement', 'Check my disbursement status'));
         break;
       case 'manual_review_info':
-        handleSendMessage('How does Manual Review work?');
+        handleSendMessage(t('jago.qManualReview', 'How does Manual Review work?'));
         break;
       case 'one_scholarship_rule':
-        handleSendMessage('What is the One-Scholarship rule?');
+        handleSendMessage(t('jago.qOneScholarship', 'What is the One-Scholarship rule?'));
         break;
       case 'open_app':
         if (activeDemoApplication) {
@@ -151,14 +153,14 @@ export const JagoAssistant: React.FC = () => {
               className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-500 text-slate-950 font-bold text-xs shadow-lg cursor-pointer border border-amber-400 hover:scale-105 transition-transform"
             >
               <FileSearch className="w-3.5 h-3.5" />
-              <span>Income flag query? Ask JAGO</span>
+              <span>{t('dashboard.actionRequired', 'Action Required')}: {t('common.askJago', 'Ask JAGO')}</span>
             </div>
           )}
 
           <button
             onClick={() => setIsJagoOpen(true)}
             className="w-14 h-14 rounded-full bg-teal-800 text-white shadow-xl hover:bg-teal-900 focus:outline-none focus:ring-4 focus:ring-teal-700/30 flex items-center justify-center transition-all hover:scale-105 group relative border-2 border-amber-400"
-            aria-label="Open JAGO Assistant"
+            aria-label={t('common.askJago', 'Open JAGO Assistant')}
           >
             <Sparkles className="w-6 h-6 text-amber-300 animate-pulse" />
             <span className="absolute -top-1 -right-1 w-4 h-4 bg-amber-500 text-slate-950 text-[10px] font-black rounded-full flex items-center justify-center">
@@ -179,19 +181,19 @@ export const JagoAssistant: React.FC = () => {
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h3 className="font-bold text-base tracking-tight">JAGO</h3>
+                  <h3 className="font-bold text-base tracking-tight">{t('jago.name', 'JAGO')}</h3>
                   <span className="px-1.5 py-0.5 text-[10px] font-bold bg-amber-400/20 text-amber-300 border border-amber-400/40 rounded">
-                    ST Virtual Assistant
+                    {t('jago.roleTitle', 'MoTA Virtual Guide')}
                   </span>
                 </div>
-                <p className="text-[11px] text-teal-200/90">Ministry of Tribal Affairs</p>
+                <p className="text-[11px] text-teal-200/90">{t('common.motaTitle', 'Ministry of Tribal Affairs')}</p>
               </div>
             </div>
 
             <div className="flex items-center gap-1">
               <button
                 onClick={() => {
-                  const initial = jagoService.getInitialGreeting(user, activeDemoApplication);
+                  const initial = jagoService.getInitialGreeting(user, activeDemoApplication, language, t);
                   setMessages(initial);
                 }}
                 title="Reset Conversation"
@@ -213,7 +215,7 @@ export const JagoAssistant: React.FC = () => {
           {activeDemoApplication && (
             <div className="bg-slate-50 border-b border-slate-200/80 px-4 py-2 flex items-center justify-between text-xs">
               <span className="text-slate-500 truncate max-w-[200px]">
-                Active: <strong className="text-slate-800">{activeDemoApplication.schemeName}</strong>
+                {t('apps.appId', 'Application')}: <strong className="text-slate-800">{activeDemoApplication.schemeName}</strong>
               </span>
               <Badge 
                 variant={activeDemoApplication.status === 'Disbursed' ? 'success' : activeDemoApplication.readinessReport?.hasMismatch ? 'warning' : 'info'}
@@ -248,7 +250,7 @@ export const JagoAssistant: React.FC = () => {
                     <div className="whitespace-pre-wrap">{msg.text}</div>
                   </div>
 
-                  {/* Context Card (if attached to response) */}
+                  {/* Context Card */}
                   {msg.contextCard && (
                     <div className="p-3 bg-white rounded-xl border border-slate-200 shadow-xs text-xs">
                       <div className="flex items-center justify-between mb-1">
@@ -268,7 +270,7 @@ export const JagoAssistant: React.FC = () => {
                           }}
                           className="w-full py-1.5 px-2 bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold rounded text-[11px] flex items-center justify-center gap-1"
                         >
-                          <span>Review in Application</span>
+                          <span>{t('apps.viewDetails', 'Review in Application')}</span>
                           <ExternalLink className="w-3 h-3" />
                         </button>
                       )}
@@ -304,7 +306,7 @@ export const JagoAssistant: React.FC = () => {
                 <div className="w-6 h-6 rounded-full bg-teal-800 text-amber-300 flex items-center justify-center text-xs font-bold animate-pulse">
                   J
                 </div>
-                <span>JAGO is thinking...</span>
+                <span>JAGO...</span>
               </div>
             )}
             <div ref={messagesEndRef} />
@@ -324,20 +326,20 @@ export const JagoAssistant: React.FC = () => {
                 type="text"
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
-                placeholder="Ask about application flags, DBT, eligibility..."
+                placeholder={t('jago.askPlaceholder', 'Ask about application flags, DBT, eligibility...')}
                 className="flex-1 px-3.5 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-700 focus:bg-white transition-all"
               />
               <button
                 type="submit"
                 disabled={!inputText.trim() || isTyping}
                 className="p-2.5 rounded-xl bg-teal-800 text-white hover:bg-teal-900 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                aria-label="Send Message"
+                aria-label={t('jago.sendBtn', 'Send')}
               >
                 <Send className="w-4 h-4" />
               </button>
             </form>
             <p className="text-[10px] text-slate-400 text-center mt-1.5">
-              Powered by ScholarSetu Rules Engine • Ministry of Tribal Affairs
+              {t('jago.disclaimer', 'Powered by ScholarSetu Rules Engine • Ministry of Tribal Affairs')}
             </p>
           </div>
         </div>

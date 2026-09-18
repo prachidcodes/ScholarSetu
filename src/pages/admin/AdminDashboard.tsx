@@ -1,18 +1,13 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
-  Building2, 
-  Users, 
   FileText, 
   CheckSquare, 
   Banknote, 
   Clock, 
   AlertTriangle, 
   ShieldCheck, 
-  ArrowRight,
-  TrendingUp,
-  Globe2,
-  ExternalLink
+  Globe2
 } from 'lucide-react';
 import { 
   BarChart, 
@@ -31,11 +26,14 @@ import {
 } from 'recharts';
 import { adminService } from '../../services/adminService';
 import { useApp } from '../../context/AppContext';
+import { useLanguage } from '../../context/LanguageContext';
+import { getTranslatedStatus } from '../../utils/statusTranslation';
 import { Card, CardHeader, CardBody } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
 import { Button } from '../../components/ui/Button';
 
 export const AdminDashboard: React.FC = () => {
+  const { t } = useLanguage();
   const kpis = adminService.getKpis();
   const schemeData = adminService.getSchemeDistribution();
   const statusData = adminService.getStatusDistribution();
@@ -57,17 +55,17 @@ export const AdminDashboard: React.FC = () => {
           <div>
             <div className="flex items-center gap-2 mb-2">
               <span className="px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider bg-amber-500 text-slate-950 rounded">
-                Ministry of Tribal Affairs (MoTA)
+                {t('common.motaTitle', 'Ministry of Tribal Affairs (MoTA)')}
               </span>
               <span className="text-xs text-slate-400 font-mono">
                 Unified Portal Operations & Intelligence
               </span>
             </div>
             <h1 className="font-display text-2xl sm:text-3xl font-black tracking-tight text-white">
-              ScholarSetu Command Center
+              {t('admin.commandCenter', 'ScholarSetu Command Center')}
             </h1>
             <p className="text-xs sm:text-sm text-slate-400 mt-1 max-w-2xl leading-relaxed">
-              Real-time monitoring of ST scholarship scheme discovery, automated cross-registry verification, District Welfare Officer manual reviews, and DBT disbursements.
+              {t('admin.commandCenterDesc', 'Real-time monitoring of ST scholarship scheme discovery, automated cross-registry verification, District Welfare Officer manual reviews, and DBT disbursements.')}
             </p>
           </div>
 
@@ -78,7 +76,7 @@ export const AdminDashboard: React.FC = () => {
                 size="md"
                 leftIcon={<CheckSquare className="w-4 h-4 text-white" />}
               >
-                Verification Engine
+                {t('admin.manualReviewQueue', 'Verification Engine')}
               </Button>
             </Link>
             <Link to="/admin/coverage">
@@ -88,7 +86,7 @@ export const AdminDashboard: React.FC = () => {
                 className="bg-slate-800 text-white border-slate-700 hover:bg-slate-700"
                 leftIcon={<Globe2 className="w-4 h-4 text-amber-400" />}
               >
-                Coverage Intelligence
+                {t('admin.districtCoverage', 'Coverage Intelligence')}
               </Button>
             </Link>
           </div>
@@ -99,7 +97,7 @@ export const AdminDashboard: React.FC = () => {
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
         <Card className="p-4 sm:p-5">
           <div className="flex items-center justify-between mb-1.5">
-            <span className="text-xs font-semibold text-slate-500">Total Applications</span>
+            <span className="text-xs font-semibold text-slate-500">{t('admin.totalApplications', 'Total Applications')}</span>
             <FileText className="w-4 h-4 text-slate-400" />
           </div>
           <div className="text-xl sm:text-2xl font-black text-slate-900">
@@ -110,7 +108,7 @@ export const AdminDashboard: React.FC = () => {
 
         <Card className="p-4 sm:p-5">
           <div className="flex items-center justify-between mb-1.5">
-            <span className="text-xs font-semibold text-slate-500">Under Verification</span>
+            <span className="text-xs font-semibold text-slate-500">{t('status.underVerification', 'Under Verification')}</span>
             <Clock className="w-4 h-4 text-sky-600" />
           </div>
           <div className="text-xl sm:text-2xl font-black text-sky-800">
@@ -121,7 +119,7 @@ export const AdminDashboard: React.FC = () => {
 
         <Card className="p-4 sm:p-5 border-amber-300 bg-amber-50/20">
           <div className="flex items-center justify-between mb-1.5">
-            <span className="text-xs font-semibold text-amber-950">Under Manual Review</span>
+            <span className="text-xs font-semibold text-amber-950">{t('status.underManualReview', 'Under Manual Review')}</span>
             <AlertTriangle className="w-4 h-4 text-amber-600" />
           </div>
           <div className="text-xl sm:text-2xl font-black text-amber-900">
@@ -132,7 +130,7 @@ export const AdminDashboard: React.FC = () => {
 
         <Card className="p-4 sm:p-5">
           <div className="flex items-center justify-between mb-1.5">
-            <span className="text-xs font-semibold text-slate-500">Sanctioned</span>
+            <span className="text-xs font-semibold text-slate-500">{t('status.sanctioned', 'Sanctioned')}</span>
             <ShieldCheck className="w-4 h-4 text-indigo-600" />
           </div>
           <div className="text-xl sm:text-2xl font-black text-indigo-800">
@@ -143,7 +141,7 @@ export const AdminDashboard: React.FC = () => {
 
         <Card className="p-4 sm:p-5 border-emerald-300 bg-emerald-50/20 col-span-2 lg:col-span-1">
           <div className="flex items-center justify-between mb-1.5">
-            <span className="text-xs font-semibold text-emerald-950">Disbursed (DBT)</span>
+            <span className="text-xs font-semibold text-emerald-950">{t('status.disbursed', 'Disbursed (DBT)')}</span>
             <Banknote className="w-4 h-4 text-emerald-600" />
           </div>
           <div className="text-xl sm:text-2xl font-black text-emerald-800">
@@ -159,7 +157,7 @@ export const AdminDashboard: React.FC = () => {
       {reviewQueue.length > 0 && (
         <Card className="border-amber-300 shadow-sm bg-gradient-to-r from-amber-50/40 via-white to-stone-50">
           <CardHeader
-            title="District Welfare Officer Priority Resolution Queue"
+            title={t('admin.manualReviewQueue', 'District Welfare Officer Priority Resolution Queue')}
             subtitle="Applications with detected variances where students have requested manual verification"
             icon={<AlertTriangle className="w-5 h-5 text-amber-600" />}
             action={
@@ -179,9 +177,9 @@ export const AdminDashboard: React.FC = () => {
                     <div className="flex items-center gap-2">
                       <span className="font-mono text-xs font-bold text-teal-900">{item.id}</span>
                       <Badge variant="warning" size="sm">
-                        {item.status}
+                        {getTranslatedStatus(item.status, t)}
                       </Badge>
-                      <span className="text-xs text-slate-500">Score: {item.readinessScore}%</span>
+                      <span className="text-xs text-slate-500">{t('readiness.score', 'Score')}: {item.readinessScore}%</span>
                     </div>
 
                     <h4 className="text-sm font-bold text-slate-900 mt-1">

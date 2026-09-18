@@ -4,18 +4,11 @@ import {
   CheckCircle2, 
   AlertCircle, 
   Clock, 
-  HelpCircle, 
-  ShieldCheck, 
   ArrowRight, 
-  Sparkles,
-  RefreshCw,
-  FolderLock,
-  Building2,
-  Banknote
+  Sparkles
 } from 'lucide-react';
 import { UserProfile, StudentDocument } from '../../types';
-import { Badge } from '../ui/Badge';
-import { Button } from '../ui/Button';
+import { useLanguage } from '../../context/LanguageContext';
 
 interface ReadinessCardProps {
   user: UserProfile | null;
@@ -30,6 +23,8 @@ export const ReadinessCard: React.FC<ReadinessCardProps> = ({
   hasMismatch,
   onOpenJago
 }) => {
+  const { t } = useLanguage();
+
   // Check checklist items
   const isProfileComplete = Boolean(
     user?.name && user?.dateOfBirth && user?.aadhaarNumber && user?.state && user?.district
@@ -49,36 +44,33 @@ export const ReadinessCard: React.FC<ReadinessCardProps> = ({
 
   // Calculate score
   const items = [
-    { label: 'Profile Information', done: isProfileComplete, weight: 20 },
-    { label: 'ST Certificate Validity', done: isStVerified, weight: 25 },
-    { label: 'Income Certificate & Ceiling', done: isIncomeValid, weight: 20 },
-    { label: 'Bank Account Aadhaar-Seeded (DBT)', done: isBankSeeded, weight: 20 },
-    { label: 'Academic Qualification Records', done: isAcademicUploaded, weight: 15 }
+    { label: t('readiness.checkProfile', 'Student Profile'), done: isProfileComplete, weight: 20 },
+    { label: t('readiness.checkCaste', 'ST Caste Certificate'), done: isStVerified, weight: 25 },
+    { label: t('readiness.checkIncome', 'Annual Family Income Validation'), done: isIncomeValid, weight: 20 },
+    { label: t('readiness.checkBank', 'Bank Account Aadhaar-Seeding (DBT Ready)'), done: isBankSeeded, weight: 20 },
+    { label: t('readiness.checkAcademic', 'Academic Qualification Records'), done: isAcademicUploaded, weight: 15 }
   ];
 
   const score = items.reduce((acc, item) => (item.done ? acc + item.weight : acc), 0);
 
   // Determine band
-  let band: { label: string; variant: 'success' | 'warning' | 'error'; color: string; desc: string } = {
-    label: 'Ready to Apply',
-    variant: 'success',
+  let band = {
+    label: t('readiness.readyToApply', 'Ready to Apply'),
     color: 'text-emerald-700 bg-emerald-50 border-emerald-200',
-    desc: 'Your profile satisfies all central criteria. Applications will undergo high-speed automated approval.'
+    desc: t('readiness.readyDesc', 'Your profile satisfies all central criteria. Applications will undergo high-speed automated approval.')
   };
 
   if (score < 50) {
     band = {
-      label: 'Not Ready',
-      variant: 'error',
+      label: t('readiness.notReady', 'Incomplete Profile'),
       color: 'text-rose-700 bg-rose-50 border-rose-200',
-      desc: 'Critical statutory certificates are missing. Please complete the checklist below before applying.'
+      desc: t('readiness.notReadyDesc', 'Missing mandatory documents or incomplete profile. Complete items below.')
     };
   } else if (score < 80 || hasMismatch) {
     band = {
-      label: 'Needs Attention',
-      variant: 'warning',
+      label: t('readiness.needsAttention', 'Needs Attention'),
       color: 'text-amber-800 bg-amber-50 border-amber-300',
-      desc: 'Some information requires review or updated documentation to avoid sanction delays.'
+      desc: t('readiness.attentionDesc', 'Minor variance detected. You may submit with a request for manual review.')
     };
   }
 
@@ -88,21 +80,21 @@ export const ReadinessCard: React.FC<ReadinessCardProps> = ({
         <div>
           <div className="flex items-center gap-2">
             <h3 className="font-display font-black text-lg text-slate-900">
-              Scholarship Readiness Engine
+              {t('readiness.cardTitle', 'Scholarship Readiness Engine')}
             </h3>
             <span className="text-[11px] font-mono font-bold bg-teal-50 text-teal-800 px-2 py-0.5 rounded border border-teal-200/70">
               Automated Pre-Check
             </span>
           </div>
           <p className="text-xs text-slate-500 mt-0.5">
-            Pre-validating your eligibility across central and state tribal registries
+            {t('readiness.cardSubtitle', 'Pre-application evaluation across five core government criteria')}
           </p>
         </div>
 
         <div className="flex items-center gap-3">
           <div className="text-right">
             <span className="text-2xl font-black text-slate-900">{score}%</span>
-            <p className="text-[10px] text-slate-400 uppercase font-semibold">Readiness Score</p>
+            <p className="text-[10px] text-slate-400 uppercase font-semibold">{t('readiness.score', 'Readiness Score')}</p>
           </div>
           <div className={`px-3 py-1.5 rounded-xl border text-xs font-bold ${band.color}`}>
             {band.label}
@@ -119,16 +111,16 @@ export const ReadinessCard: React.FC<ReadinessCardProps> = ({
         {/* Item 1 */}
         <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-start justify-between gap-2">
           <div>
-            <p className="text-xs font-bold text-slate-800">Student Profile</p>
+            <p className="text-xs font-bold text-slate-800">{t('readiness.checkProfile', 'Student Profile')}</p>
             <p className="text-[11px] text-slate-500">Aadhaar, State, District, Sub-tribe</p>
           </div>
           {isProfileComplete ? (
             <span className="text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded text-[11px] font-bold flex items-center gap-1">
-              <CheckCircle2 className="w-3.5 h-3.5" /> Done
+              <CheckCircle2 className="w-3.5 h-3.5" /> {t('readiness.statusDone', 'Done')}
             </span>
           ) : (
             <span className="text-amber-700 bg-amber-50 px-2 py-0.5 rounded text-[11px] font-bold flex items-center gap-1">
-              <Clock className="w-3.5 h-3.5" /> Incomplete
+              <Clock className="w-3.5 h-3.5" /> {t('readiness.statusPending', 'Incomplete')}
             </span>
           )}
         </div>
@@ -136,16 +128,16 @@ export const ReadinessCard: React.FC<ReadinessCardProps> = ({
         {/* Item 2 */}
         <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-start justify-between gap-2">
           <div>
-            <p className="text-xs font-bold text-slate-800">ST Caste Certificate</p>
+            <p className="text-xs font-bold text-slate-800">{t('readiness.checkCaste', 'ST Caste Certificate')}</p>
             <p className="text-[11px] text-slate-500">{user?.stCertificateNumber || 'Verified in e-District'}</p>
           </div>
           {isStVerified ? (
             <span className="text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded text-[11px] font-bold flex items-center gap-1">
-              <CheckCircle2 className="w-3.5 h-3.5" /> Verified
+              <CheckCircle2 className="w-3.5 h-3.5" /> {t('readiness.statusValid', 'Verified')}
             </span>
           ) : (
             <span className="text-amber-700 bg-amber-50 px-2 py-0.5 rounded text-[11px] font-bold flex items-center gap-1">
-              <Clock className="w-3.5 h-3.5" /> Pending
+              <Clock className="w-3.5 h-3.5" /> {t('readiness.statusPending', 'Pending')}
             </span>
           )}
         </div>
@@ -153,18 +145,18 @@ export const ReadinessCard: React.FC<ReadinessCardProps> = ({
         {/* Item 3 */}
         <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-start justify-between gap-2">
           <div>
-            <p className="text-xs font-bold text-slate-800">Income Ceiling Check</p>
+            <p className="text-xs font-bold text-slate-800">{t('readiness.checkIncome', 'Income Ceiling Check')}</p>
             <p className="text-[11px] text-slate-500">
-              {hasMismatch ? 'Variance detected (₹2.0L vs ₹3.5L)' : 'Within ₹2.5L limit'}
+              {hasMismatch ? 'Variance detected (₹2.0L vs ₹3.5L)' : 'Within limit'}
             </p>
           </div>
           {isIncomeValid ? (
             <span className="text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded text-[11px] font-bold flex items-center gap-1">
-              <CheckCircle2 className="w-3.5 h-3.5" /> Valid
+              <CheckCircle2 className="w-3.5 h-3.5" /> {t('readiness.statusValid', 'Valid')}
             </span>
           ) : (
             <span className="text-amber-800 bg-amber-100 px-2 py-0.5 rounded text-[11px] font-bold flex items-center gap-1">
-              <AlertCircle className="w-3.5 h-3.5" /> Review
+              <AlertCircle className="w-3.5 h-3.5" /> {t('readiness.statusReview', 'Review')}
             </span>
           )}
         </div>
@@ -172,16 +164,16 @@ export const ReadinessCard: React.FC<ReadinessCardProps> = ({
         {/* Item 4 */}
         <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-start justify-between gap-2">
           <div>
-            <p className="text-xs font-bold text-slate-800">Bank Aadhaar Seeding (DBT)</p>
+            <p className="text-xs font-bold text-slate-800">{t('readiness.checkBank', 'Bank Aadhaar Seeding (DBT)')}</p>
             <p className="text-[11px] text-slate-500">NPCI Aadhaar Payment Bridge</p>
           </div>
           {isBankSeeded ? (
             <span className="text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded text-[11px] font-bold flex items-center gap-1">
-              <CheckCircle2 className="w-3.5 h-3.5" /> Seeded
+              <CheckCircle2 className="w-3.5 h-3.5" /> {t('readiness.statusSeeded', 'Seeded')}
             </span>
           ) : (
             <span className="text-rose-700 bg-rose-50 px-2 py-0.5 rounded text-[11px] font-bold flex items-center gap-1">
-              <AlertCircle className="w-3.5 h-3.5" /> Not Seeded
+              <AlertCircle className="w-3.5 h-3.5" /> {t('readiness.statusNotSeeded', 'Not Seeded')}
             </span>
           )}
         </div>
@@ -189,16 +181,16 @@ export const ReadinessCard: React.FC<ReadinessCardProps> = ({
         {/* Item 5 */}
         <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-start justify-between gap-2">
           <div>
-            <p className="text-xs font-bold text-slate-800">Academic Qualification</p>
+            <p className="text-xs font-bold text-slate-800">{t('readiness.checkAcademic', 'Academic Qualification')}</p>
             <p className="text-[11px] text-slate-500">Board Marksheet / Degree</p>
           </div>
           {isAcademicUploaded ? (
             <span className="text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded text-[11px] font-bold flex items-center gap-1">
-              <CheckCircle2 className="w-3.5 h-3.5" /> Uploaded
+              <CheckCircle2 className="w-3.5 h-3.5" /> {t('readiness.statusUploaded', 'Uploaded')}
             </span>
           ) : (
             <span className="text-amber-700 bg-amber-50 px-2 py-0.5 rounded text-[11px] font-bold flex items-center gap-1">
-              <Clock className="w-3.5 h-3.5" /> Missing
+              <Clock className="w-3.5 h-3.5" /> {t('readiness.statusMissing', 'Missing')}
             </span>
           )}
         </div>
@@ -206,14 +198,14 @@ export const ReadinessCard: React.FC<ReadinessCardProps> = ({
         {/* Quick Action Box */}
         <div className="p-3 rounded-xl bg-teal-50/70 border border-teal-200 flex items-center justify-between gap-2">
           <div>
-            <p className="text-xs font-bold text-teal-950">Document Wallet</p>
-            <p className="text-[11px] text-teal-800">Sync with DigiLocker</p>
+            <p className="text-xs font-bold text-teal-950">{t('docs.title', 'Document Wallet')}</p>
+            <p className="text-[11px] text-teal-800">{t('docs.digiLockerVault', 'Sync with DigiLocker')}</p>
           </div>
           <Link
             to="/student/documents"
             className="text-xs font-bold text-teal-800 hover:text-teal-950 flex items-center gap-1"
           >
-            <span>Manage</span>
+            <span>{t('common.view', 'Manage')}</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
@@ -225,23 +217,24 @@ export const ReadinessCard: React.FC<ReadinessCardProps> = ({
           <div className="flex items-start gap-2.5">
             <Sparkles className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
             <div>
-              <span className="font-bold">Recommendation:</span> Automated income check flagged a difference between your self-declaration and tax/revenue database. Remember: an information mismatch is a signal to review — never an automatic rejection.
+              <span className="font-bold">{t('dashboard.actionRequired', 'Recommendation')}: </span>
+              {t('mismatch.philosophy', 'An information mismatch is a signal to review — not an automatic rejection.')}
             </div>
           </div>
           <div className="flex items-center gap-2 shrink-0">
             {onOpenJago && (
               <button
-                onClick={() => onOpenJago('Explain why my income verification shows a mismatch and what steps I can take')}
+                onClick={() => onOpenJago(t('jago.qFlagged', 'Explain why my income verification shows a mismatch'))}
                 className="px-2.5 py-1 text-xs font-bold bg-white text-amber-900 border border-amber-300 rounded-lg hover:bg-amber-100"
               >
-                Ask JAGO
+                {t('common.askJago', 'Ask JAGO')}
               </button>
             )}
             <Link
               to="/student/applications"
               className="px-3 py-1 text-xs font-bold bg-amber-600 text-white rounded-lg hover:bg-amber-700"
             >
-              Review Application
+              {t('apps.viewDetails', 'Review Application')}
             </Link>
           </div>
         </div>
